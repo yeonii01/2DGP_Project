@@ -2,22 +2,31 @@ from pico2d import *
 
 class Knight:
     def __init__(self):
-        self.x, self.y = 400, 90
+        self.x, self.y = 0, 90
         self.frame = 0
+        self.frame_count = 0
         self.dir = True
-        self.state = ['idle', 'jump', 'run', 'attack']
+        self.state = ['idle', 'jump', 'run', 'attack', 'rush']
         self.image_r = load_image('knight_sprite.png')
         self.image_l = load_image('knight_sprite_left.png')
 
     def update(self):
         if self.state == 'idle':
             self.frame = (self.frame+1) % 7
-        elif self.state == 'run':
-            self.frame = (self.frame + 1) % 12
-            self.x += 20
+        elif self.state == 'rush':
+            knight.frame_count += 1
+            if self.frame_count <= 12:
+                self.frame = (self.frame + 1) %12
+                self.x += 10
+            else:
+                self.frame_count = 0
+                self.frame = 0
+                self.state = 'idle'
     def draw(self):
-        if self.state == 'run' and self.dir == True:
+        if self.state == 'rush' and self.dir == True:
             self.image_r.clip_draw(self.frame*80, 223, 80, 80, self.x, self.y)
+        if self.state == 'attack' and self.dir == True:
+            self.image_r.clip_draw(self.frame * 80, 223, 80, 80, self.x, self.y)
         elif self.state == 'idle' and self.dir == True:
             self.image_r.clip_draw(self.frame*80, 303, 80, 80, self.x, self.y)
         elif self.state == 'idle' and self.dir == False:
@@ -39,6 +48,15 @@ def handle_events():
         elif event.key == SDLK_RIGHT:
             knight.state = 'run'
             knight.dir = True
+        elif event.key == SDLK_x:
+            knight.state = 'attack'
+            knight.frame = 0
+        elif event.key == SDLK_c:
+            knight.state = 'rush'
+            knight.frame = 0
+        else:
+            knight.state = 'idle'
+            knight.frame = 0
 
 
 open_canvas()
@@ -58,7 +76,7 @@ while running:
 
     if knight.state == 'idle':
         delay(0.2)
-    elif knight.state == 'run':
-        delay(0.1)
+    elif knight.state == 'rush':
+        delay(0.03)
 
 close_canvas()
