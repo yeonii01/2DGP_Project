@@ -5,6 +5,7 @@ class Knight:
         self.x, self.y = 0, 90
         self.frame = 0
         self.dir = True
+        self.savey = 0
         self.state = ['idle', 'jump', 'run', 'attack', 'rush', 'up', 'down']
         self.image_r = load_image('knight_sprite.png')
         self.image_l = load_image('knight_sprite_left.png')
@@ -14,7 +15,10 @@ class Knight:
             self.frame = (self.frame+1) % 2
         elif self.state == 'rush':
             self.frame = (self.frame + 1) % 12
-            self.x += 10
+            if self.dir == True:
+                self.x += 10
+            else:
+                self.x -= 10
             if self.frame == 0:
                 self.frame = 0
                 self.state = 'idle'
@@ -25,16 +29,29 @@ class Knight:
                 self.state = 'idle'
         elif self.state == 'run':
             self.frame = (self.frame + 1) % 9
-            self.x += 5
+            if self.dir == True:
+                self.x += 5
+            else:
+                self.x -= 5
         elif self.state == 'up':
             self.frame = (self.frame + 1) % 3 + 3
         elif self.state == 'down':
             self.frame = (self.frame + 1) % 3 + 7
+        elif self.state == 'jump':
+            self.frame = (self.frame + 1) % 12
+            if self.frame == 0:
+                self.frame = 0
+                self.y = self.savey
+                self.state = 'idle'
+            elif self.frame <= 6:
+                self.y += 25
+            elif self.frame <= 12 and self.frame >= 6:
+                self.y -= 25
     def draw(self):
         if self.dir == True:
-            if self.state == 'rush':
+            if self.state == 'rush' or self.state == 'jump':
                 self.image_r.clip_draw(self.frame*80, 223, 80, 80, self.x, self.y)
-            if self.state == 'run':
+            elif self.state == 'run':
                 self.image_r.clip_draw(self.frame * 80, 942, 80, 80, self.x, self.y)
             elif self.state == 'attack':
                 self.image_r.clip_draw(self.frame * 80, 623, 80, 80, self.x, self.y)
@@ -45,8 +62,18 @@ class Knight:
             elif self.state == 'down':
                 self.image_r.clip_draw(self.frame * 80, 623, 80, 80, self.x, self.y)
         elif self.dir == False:
-            if self.state == 'idle':
-                self.image_l.clip_draw(800 - self.frame * 80, 303, 80, 80, self.x, self.y)
+            if self.state == 'rush' or self.state == 'jump':
+                self.image_l.clip_draw(942 - self.frame * 80, 223, 80, 80, self.x, self.y)
+            elif self.state == 'run':
+                self.image_l.clip_draw(942 - self.frame * 80, 942, 80, 80, self.x, self.y)
+            elif self.state == 'attack':
+                self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, self.x, self.y)
+            elif self.state == 'idle':
+                self.image_l.clip_draw(942 - self.frame * 80, 304, 80, 80, self.x, self.y)
+            elif self.state == 'up':
+                self.image_l.clip_draw(942 - self.frame * 80, 304, 80, 80, self.x, self.y)
+            elif self.state == 'down':
+                self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, self.x, self.y)
 
 
 def handle_events():
@@ -70,6 +97,9 @@ def handle_events():
                 knight.state = 'down'
             elif event.key == SDLK_x:
                 knight.state = 'attack'
+            elif event.key == SDLK_z:
+                knight.savey = knight.y
+                knight.state = 'jump'
             elif event.key == SDLK_c:
                 knight.state = 'rush'
         elif event.type == SDL_KEYUP:
@@ -100,5 +130,7 @@ while running:
         delay(0.05)
     elif knight.state == 'up' or knight.state == 'down':
         delay(0.4)
+    elif knight.state == 'jump':
+        delay(0.075)
 
 close_canvas()
