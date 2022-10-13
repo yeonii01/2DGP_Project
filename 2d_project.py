@@ -6,6 +6,7 @@ class Knight:
         self.dir = True
         self.savey = 0
         self.state = ['idle', 'jump', 'run', 'attack', 'rush', 'up', 'down']
+        self.move = False
         self.image_r = load_image('knight_sprite.png')
         self.image_l = load_image('knight_sprite_left.png')
     def update(self):
@@ -25,16 +26,6 @@ class Knight:
             if self.frame == 0:
                 self.frame = 0
                 self.state = 'idle'
-        elif self.state == 'run':
-            self.frame = (self.frame + 1) % 9
-            if self.dir == True:
-                self.x += 5
-            else:
-                self.x -= 5
-        elif self.state == 'up':
-            self.frame = (self.frame + 1) % 3 + 3
-        elif self.state == 'down':
-            self.frame = (self.frame + 1) % 3 + 7
         elif self.state == 'jump':
             self.frame = (self.frame + 1) % 12
             if self.frame == 0:
@@ -45,6 +36,22 @@ class Knight:
                 self.y += 25
             elif self.frame <= 12 and self.frame >= 6:
                 self.y -= 25
+            if self.move == True:
+                if self.dir == True:
+                    self.x += 5
+                else:
+                    self.x -= 5
+        elif self.state == 'run':
+            self.frame = (self.frame + 1) % 9
+            if self.dir == True:
+                self.x += 5
+            else:
+                self.x -= 5
+        elif self.state == 'up':
+            self.frame = (self.frame + 1) % 3 + 3
+        elif self.state == 'down':
+            self.frame = (self.frame + 1) % 3 + 7
+
     def draw(self):
         if self.dir == True:
             if self.state == 'rush' or self.state == 'jump':
@@ -77,9 +84,16 @@ class Knight:
 class Map:
     def __init__(self):
         self.x, self.y = 400, 300
-        self.image = load_image('bg_1.png')
+        self.map1_image = load_image('bg_1.png')
+        self.start_image = load_image('start_menu.png')
+        self.start_titleimage = load_image('start_title.png')
+        self.state = ['start', 'map1']
     def draw(self):
-        self.image.clip_draw(0, 0, 800, 600, self.x, self.y)
+        if self.state == 'start':
+            self.start_image.clip_draw(0, 0, 800, 600, self.x, self.y)
+            self.start_titleimage.clip_draw(0, 0, 600, 250, 400, 400)
+        elif self.state == 'map1':
+            self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
 
 
 def handle_events():
@@ -91,26 +105,39 @@ def handle_events():
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 running = False
-            elif event.key == SDLK_LEFT:
-                knight.state = 'run'
-                knight.dir = False
-            elif event.key == SDLK_RIGHT:
-                knight.state = 'run'
-                knight.dir = True
+            elif event.key == SDLK_z:
+                knight.savey = knight.y
+                knight.state = 'jump'
+                knight.frame = 0
+            if knight.state != 'jump':
+                if event.key == SDLK_LEFT:
+                    knight.state = 'run'
+                    knight.dir = False
+                    knight.move = True
+                elif event.key == SDLK_RIGHT:
+                    knight.state = 'run'
+                    knight.dir = True
+                    knight.move = True
+            elif knight.state == 'jump':
+                if event.key == SDLK_LEFT:
+                    knight.dir = False
+                    knight.move = True
+                elif event.key == SDLK_RIGHT:
+                    knight.dir = True
+                    knight.move = True
             elif event.key == SDLK_UP:
                 knight.state = 'up'
             elif event.key == SDLK_DOWN:
                 knight.state = 'down'
             elif event.key == SDLK_x:
                 knight.state = 'attack'
-            elif event.key == SDLK_z:
-                knight.savey = knight.y
-                knight.state = 'jump'
             elif event.key == SDLK_c:
                 knight.state = 'rush'
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT or event.key == SDLK_LEFT or event.key == SDLK_UP or event.key == SDLK_DOWN:
-                knight.state = 'idle'
+                if knight.state != 'jump':
+                    knight.state = 'idle'
+                    knight.move = False
 
 
 open_canvas()
@@ -120,6 +147,7 @@ map = Map()
 running = True
 knight.dir = True
 knight.state = 'idle'
+map.state = 'start'
 
 while running:
     handle_events()
