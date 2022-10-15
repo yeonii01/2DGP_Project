@@ -1,15 +1,13 @@
 from pico2d import *
-
 class Knight:
     def __init__(self):
-        self.x, self.y = 0, 90
+        self.x, self.y = 400, 90
         self.frame = 0
         self.dir = True
         self.savey = 0
         self.state = ['idle', 'jump', 'run', 'attack', 'rush', 'up', 'down']
         self.image_r = load_image('knight_sprite.png')
         self.image_l = load_image('knight_sprite_left.png')
-
     def update(self):
         if self.state == 'idle':
             self.frame = (self.frame+1) % 2
@@ -76,6 +74,14 @@ class Knight:
                 self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, self.x, self.y)
 
 
+class Map:
+    def __init__(self):
+        self.x, self.y = 400, 300
+        self.image = load_image('bg_1.png')
+    def draw(self):
+        self.image.clip_draw(0, 0, 800, 600, self.x, self.y)
+
+
 def handle_events():
     global running
     events = get_events()
@@ -110,6 +116,7 @@ def handle_events():
 open_canvas()
 
 knight = Knight()
+map = Map()
 running = True
 knight.dir = True
 knight.state = 'idle'
@@ -119,6 +126,7 @@ while running:
 
     knight.update()
     clear_canvas()
+    map.draw()
     knight.draw()
     update_canvas()
 
