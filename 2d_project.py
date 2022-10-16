@@ -3,12 +3,16 @@ class Knight:
     def __init__(self):
         self.x, self.y = 400, 90
         self.frame = 0
+        self.jumpcount = 0
         self.dir = True
         self.savey = 0
         self.state = ['idle', 'jump', 'run', 'attack', 'rush', 'up', 'down']
+        self.pre_state = 'idle'
         self.move = False
+        self.hp_num = 5
         self.image_r = load_image('knight_sprite.png')
         self.image_l = load_image('knight_sprite_left.png')
+        self.hp_image = load_image('hp.png')
     def update(self):
         if self.state == 'idle':
             self.frame = (self.frame+1) % 2
@@ -20,24 +24,35 @@ class Knight:
                 self.x -= 10
             if self.frame == 0:
                 self.frame = 0
-                self.state = 'idle'
+                if self.pre_state == 'jump':
+                    self.state = 'jump'
+                    self.pre_state = 'idle'
+                    if self.jumpcount < 6:
+                        self.jumpcount = 12 - self.jumpcount
+                        self.frame = self.jumpcount
+                    else:
+                        self.frame = self.jumpcount
+                else:
+                    self.state = 'idle'
         elif self.state == 'attack':
             self.frame = (self.frame + 1) % 5
             if self.frame == 0:
                 self.frame = 0
                 self.state = 'idle'
         elif self.state == 'jump':
+            self.jumpcount += 1
             self.frame = (self.frame + 1) % 12
             if self.frame == 0:
                 self.frame = 0
+                self.jumpcount = 0
                 self.y = self.savey
                 if self.move == False:
                     self.state = 'idle'
                 else:
                     self.state = 'run'
-            elif self.frame <= 6:
+            elif self.jumpcount <= 6:
                 self.y += 25
-            elif self.frame <= 12 and self.frame >= 6:
+            elif self.jumpcount <= 12 and self.jumpcount >= 6:
                 self.y -= 25
             if self.move == True:
                 if self.dir == True:
@@ -83,12 +98,14 @@ class Knight:
                     self.image_l.clip_draw(942 - self.frame * 80, 304, 80, 80, self.x, self.y)
                 elif self.state == 'down':
                     self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, self.x, self.y)
-
+            for x in range(0, knight.hp_num):
+                self.hp_image.clip_draw(0, 0, 40, 50, 100 + x * 40, 550)
 
 class Map:
     def __init__(self):
         self.x, self.y = 400, 300
         self.cursor_x,self.cursor_y = 0,0
+        self.map_ui = load_image('ui_hp_left.png')
         self.map1_image = load_image('bg_1.png')
         self.start_image = load_image('start_menu.png')
         self.start_titleimage = load_image('start_title.png')
@@ -103,6 +120,7 @@ class Map:
             self.start_cursor.clip_draw(0,0,37,37,self.cursor_x,self.cursor_y)
         elif self.state == 'map1':
             self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
+            self.map_ui.clip_draw(0,0,100,60,60,560)
 
 
 def handle_events():
@@ -125,6 +143,8 @@ def handle_events():
             elif event.key == SDLK_x:
                 knight.state = 'attack'
             elif event.key == SDLK_c:
+                if knight.state == 'jump':
+                    knight.pre_state = 'jump'
                 knight.state = 'rush'
             if knight.state != 'jump':
                 if event.key == SDLK_LEFT:
@@ -135,6 +155,8 @@ def handle_events():
                     knight.state = 'run'
                     knight.dir = True
                     knight.move = True
+                if event.key == SDLK_c:
+                    knight.state = 'rush'
             elif knight.state == 'jump':
                 if event.key == SDLK_LEFT:
                     knight.dir = False
@@ -148,7 +170,14 @@ def handle_events():
                     knight.state = 'idle'
                     knight.move = False
         elif event.type == SDL_MOUSEMOTION:
-            map.cursor_x, map.cursor_y = event.x, 600 -1 - event.y
+            if map.state == 'start':
+                map.cursor_x, map.cursor_y = event.x, 600 -1 - event.y
+        if event.type == SDL_MOUSEBUTTONDOWN:
+            if event.button == SDL_BUTTON_LEFT:
+                if map.state == 'start':
+                    if event.x >=315 and event.x <=485 and 600 -1 - event.y >= 124 and 600 -1 - event.y <=176:
+                        map.state = 'map1'
+
 
 open_canvas()
 
