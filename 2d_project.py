@@ -1,7 +1,7 @@
 from pico2d import *
 class Knight:
     def __init__(self):
-        self.x, self.y = 400, 90
+        self.x, self.y = 400, 110
         self.frame = 0
         self.jumpcount = 0
         self.dir = True
@@ -74,30 +74,30 @@ class Knight:
         if map.state != 'start':
             if self.dir == True:
                 if self.state == 'rush' or self.state == 'jump':
-                    self.image_r.clip_draw(self.frame*80, 223, 80, 80, self.x, self.y)
+                    self.image_r.clip_draw(self.frame*80, 223, 80, 80, 400, self.y)
                 elif self.state == 'run':
-                    self.image_r.clip_draw(self.frame * 80, 942, 80, 80, self.x, self.y)
+                    self.image_r.clip_draw(self.frame * 80, 942, 80, 80, 400, self.y)
                 elif self.state == 'attack':
-                    self.image_r.clip_draw(self.frame * 80, 623, 80, 80, self.x, self.y)
+                    self.image_r.clip_draw(self.frame * 80, 623, 80, 80, 400, self.y)
                 elif self.state == 'idle':
-                    self.image_r.clip_draw(self.frame * 80, 304, 80, 80, self.x, self.y)
+                    self.image_r.clip_draw(self.frame * 80, 304, 80, 80, 400, self.y)
                 elif self.state == 'up':
-                    self.image_r.clip_draw(self.frame * 80, 304, 80, 80, self.x, self.y)
+                    self.image_r.clip_draw(self.frame * 80, 304, 80, 80, 400, self.y)
                 elif self.state == 'down':
-                    self.image_r.clip_draw(self.frame * 80, 623, 80, 80, self.x, self.y)
+                    self.image_r.clip_draw(self.frame * 80, 623, 80, 80, 400, self.y)
             elif self.dir == False:
                 if self.state == 'rush' or self.state == 'jump':
-                    self.image_l.clip_draw(942 - self.frame * 80, 223, 80, 80, self.x, self.y)
+                    self.image_l.clip_draw(942 - self.frame * 80, 223, 80, 80, 400, self.y)
                 elif self.state == 'run':
-                    self.image_l.clip_draw(942 - self.frame * 80, 942, 80, 80, self.x, self.y)
+                    self.image_l.clip_draw(942 - self.frame * 80, 942, 80, 80, 400, self.y)
                 elif self.state == 'attack':
-                    self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, self.x, self.y)
+                    self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, 400, self.y)
                 elif self.state == 'idle':
-                    self.image_l.clip_draw(942 - self.frame * 80, 304, 80, 80, self.x, self.y)
+                    self.image_l.clip_draw(942 - self.frame * 80, 304, 80, 80, 400, self.y)
                 elif self.state == 'up':
-                    self.image_l.clip_draw(942 - self.frame * 80, 304, 80, 80, self.x, self.y)
+                    self.image_l.clip_draw(942 - self.frame * 80, 304, 80, 80, 400, self.y)
                 elif self.state == 'down':
-                    self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, self.x, self.y)
+                    self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, 400, self.y)
             for x in range(0, knight.hp_num):
                 self.hp_image.clip_draw(0, 0, 40, 50, 100 + x * 40, 550)
 
@@ -107,6 +107,7 @@ class Map:
         self.cursor_x,self.cursor_y = 0,0
         self.map_ui = load_image('ui_hp_left.png')
         self.map1_image = load_image('bg_1.png')
+        self.map1_floor = load_image('floor.png')
         self.start_image = load_image('start_menu.png')
         self.start_titleimage = load_image('start_title.png')
         self.start_font = load_image('start_font.png')
@@ -121,6 +122,8 @@ class Map:
         elif self.state == 'map1':
             self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
             self.map_ui.clip_draw(0,0,100,60,60,560)
+            for x in range(100):
+                self.map1_floor.clip_draw(0, 0, 150, 25, 75 * x - knight.x, 70)
 
 
 def handle_events():
