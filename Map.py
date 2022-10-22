@@ -1,7 +1,7 @@
 import Knight
 from pico2d import *
 
-class Map:
+class map:
     def __init__(self):
         self.x, self.y = 400, 300
         self.cursor_x,self.cursor_y = 0,0
@@ -13,6 +13,8 @@ class Map:
         self.start_font = load_image('start_font.png')
         self.start_cursor = load_image('cursor.png')
         self.state = ['start', 'map1']
+    def update(self):
+        pass
     def draw(self):
         if self.state == 'start':
             self.start_image.clip_draw(0, 0, 800, 600, self.x, self.y)

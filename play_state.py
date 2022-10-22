@@ -1,7 +1,7 @@
 from pico2d import *
 import game_framework
-import Knight
-import Map
+from Knight import knight
+from Map import map
 import game_world
 
 def handle_events():
@@ -12,15 +12,16 @@ def handle_events():
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
             game_framework.quit()
         else:
-            knight.handle_event(event)
+            Knight.handle_event(event)
 
 
 # 초기화
 def enter():
-    global knight, map
-    knight = Knight()
-    game_world.add_object(knight, 1)
-    game_world.add_object(map, 0)
+    global Knight, Map
+    Map = map()
+    Knight = knight()
+    game_world.add_object(Knight, 1)
+    game_world.add_object(Map, 0)
 
 
 # 종료
