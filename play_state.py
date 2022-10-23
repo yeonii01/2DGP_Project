@@ -30,11 +30,17 @@ def exit():
 
 def update():
     for game_object in game_world.all_objects():
-        game_object.update()
+        if Map.cur_state == 'start':
+            Map.update()
+        else:
+            game_object.update()
 
 def draw_world():
     for game_object in game_world.all_objects():
-        game_object.draw()
+        if Map.cur_state == 'start':
+            Map.draw()
+        else:
+            game_object.draw()
 
 def draw():
     clear_canvas()
@@ -46,7 +52,6 @@ def pause():
 
 def resume():
     pass
-
 
 
 

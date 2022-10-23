@@ -1,4 +1,5 @@
-import Knight
+# from Knight import knight
+import play_state
 from pico2d import *
 
 class map:
@@ -13,16 +14,26 @@ class map:
         self.start_font = load_image('start_font.png')
         self.start_cursor = load_image('cursor.png')
         self.state = ['start', 'map1']
+        self.cur_state = 'start'
     def update(self):
-        pass
+        if self.cur_state == 'start':
+            events = get_events()
+            for event in events:
+                if event.type == SDL_MOUSEMOTION:
+                    self.cursor_x, self.cursor_y = event.x, 600 - 1 - event.y
+                if event.type == SDL_MOUSEBUTTONDOWN:
+                    if event.x <=573 and event.x >=170:
+                        if 600 - 1 - event.y >=53 and 600 - 1 -event.y <=203:
+                            self.cur_state = 'map1'
+
     def draw(self):
-        if self.state == 'start':
+        if self.cur_state == 'start':
             self.start_image.clip_draw(0, 0, 800, 600, self.x, self.y)
             self.start_titleimage.clip_draw(0, 0, 600, 250, 400, 400)
             self.start_font.clip_draw(0, 0, 170, 53, 400, 150)
             self.start_cursor.clip_draw(0,0,37,37,self.cursor_x,self.cursor_y)
-        elif self.state == 'map1':
+        elif self.cur_state == 'map1':
             self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
             self.map_ui.clip_draw(0,0,100,60,60,560)
             for x in range(100):
-                self.map1_floor.clip_draw(0, 0, 150, 25, 75 * x - Knight.knight.x, 70)
+                self.map1_floor.clip_draw(0, 0, 150, 25, 75 * x - play_state.Knight.x, 70)

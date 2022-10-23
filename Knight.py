@@ -1,5 +1,5 @@
 from pico2d import *
-
+from Map import map
 RD, LD, RU, LU, UD, DD, UU, DU, Z, X, C = range(11)
 event_name = ['RD','LD','RU','LU', 'UD', 'DD','UU','DU', 'Z','X','C']
 
