@@ -8,8 +8,6 @@ class GameState:
         self.update = state.update
         self.draw = state.draw
 
-
-
 class TestGameState:
 
     def __init__(self, name):
