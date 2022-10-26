@@ -2,6 +2,7 @@ from pico2d import *
 import game_framework
 from Knight import knight
 from Map import map
+from Enemy import groundmonster
 import game_world
 
 def handle_events():
@@ -20,7 +21,9 @@ def enter():
     global Knight, Map
     Map = map()
     Knight = knight()
+    GroundMonster = groundmonster()
     game_world.add_object(Knight, 1)
+    game_world.add_object(GroundMonster, 1)
     game_world.add_object(Map, 0)
 
 

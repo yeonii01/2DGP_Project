@@ -20,7 +20,7 @@ key_event_table = {
 class IDLE:
     @staticmethod
     def enter(self,event):
-        self.dir = 0
+        # self.dir = 0
         self.frame = 0
         pass
 
@@ -88,9 +88,12 @@ class RUN:
     @staticmethod
     def enter(self,event):
         self.frame = 0
+        self.dir = 0
         if event == RD:
+            self.face_dir = 1
             self.dir += 1
         elif event == LD:
+            self.face_dir = -1
             self.dir -= 1
         elif event == RU:
             self.dir -= 1
@@ -99,8 +102,9 @@ class RUN:
 
     @staticmethod
     def exit(self, event):
-        self.face_dir = self.dir
-
+        # self.face_dir = self.dir
+        # print(self.face_dir)
+        pass
     @staticmethod
     def do(self):
         delay(0.05)
@@ -155,7 +159,6 @@ class JUMP:
         # self.jumpcount = 0
         # self.cur_state = IDLE
         # self.dir = self.face_dir
-        pass
     @staticmethod
     def do(self):
         delay(0.07)
@@ -341,17 +344,8 @@ class knight:
     def add_event(self, event):
         self.event_que.insert(0, event)
 
-        # if self.cur_state == JUMP:
-        #     if event == RD:
-        #         self.dir += 1
-        #     elif event == LD:
-        #         self.dir -= 1
-        #     elif event == RU:
-        #         self.dir -= 1
-        #     elif event == LU:
-        #         self.dir += 1
-
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
-            self.add_event(key_event)
+            if self.cur_state != JUMPRUSH:
+                self.add_event(key_event)
