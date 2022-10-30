@@ -6,7 +6,7 @@ class map:
     def __init__(self):
         self.x, self.y = 400, 300
         self.cursor_x,self.cursor_y = 0,0
-        self.map_ui = load_image('ui_hp_left.png')
+        self.map_ui = load_image('ui_hp.png')
         self.map1_image = load_image('bg_1.png')
         self.map1_floor = load_image('floor.png')
         self.start_image = load_image('start_menu.png')
@@ -36,4 +36,4 @@ class map:
             self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
             self.map_ui.clip_draw(0,0,100,60,60,560)
             for x in range(100):
-                self.map1_floor.clip_draw(0, 0, 150, 25, 75 * x - play_state.Knight.x, 70)
+                self.map1_floor.clip_draw(0, 0, 150, 25, 75 * x - play_state.knight.x, 70)

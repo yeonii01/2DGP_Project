@@ -1,8 +1,8 @@
 from pico2d import *
 import game_framework
-from Knight import knight
+import Knight
 from Map import map
-from Enemy import groundmonster
+import Enemy
 import game_world
 
 def handle_events():
@@ -13,30 +13,58 @@ def handle_events():
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
             game_framework.quit()
         else:
-            Knight.handle_event(event)
+            knight.handle_event(event)
 
 
 # 초기화
 def enter():
-    global Knight, Map
+    global knight, Map, GroundMonster
     Map = map()
-    Knight = knight()
-    GroundMonster = groundmonster()
-    game_world.add_object(Knight, 1)
+    knight = Knight.knight()
+    GroundMonster = Enemy.groundmonster()
+    game_world.add_object(knight, 1)
     game_world.add_object(GroundMonster, 1)
     game_world.add_object(Map, 0)
-
 
 # 종료
 def exit():
     game_world.clear()
 
+
+timer = 0
 def update():
+    global timer
+
     for game_object in game_world.all_objects():
         if Map.cur_state == 'start':
             Map.update()
         else:
             game_object.update()
+
+
+    if math.fabs(knight.x - GroundMonster.x <= 150):
+        if knight.cur_state == Knight.ATTACK:
+            GroundMonster.life -= 1
+            GroundMonster.x -= GroundMonster.dir * 70
+            print('COLLISION')
+
+    if timer >= 0:
+        timer -= 1
+
+    else:
+        if collide(knight, GroundMonster):
+            if knight.cur_state != Knight.ATTACK:
+                if knight. life > 0:
+                    knight.life -= 1
+                    timer = 10
+
+    if knight.life == 0:
+        pass
+
+    if GroundMonster.life == 0:
+        GroundMonster.cur_state = Enemy.DIE
+
+
 
 def draw_world():
     for game_object in game_world.all_objects():
@@ -49,6 +77,17 @@ def draw():
     clear_canvas()
     draw_world()
     update_canvas()
+
+def collide(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+
+    return True
 
 def pause():
     pass

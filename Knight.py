@@ -311,7 +311,7 @@ class knight:
         self.dir, self.face_dir = 0, 1
         self.savey = 0
 
-        self.hp_num = 5
+        self.life = 5
 
         self.event_que = []
         self.cur_state = IDLE
@@ -329,7 +329,7 @@ class knight:
 
         if self.event_que:
             event = self.event_que.pop()
-            pre_state= event
+            self.pre_state = event
             if self.frame !=0 and (self.cur_state == JUMP or self.cur_state == JUMPRUSH or self.cur_state == RUNJUMP or self.cur_state == RUSH):
                 self.cur_state.exit(self, event)
             try:
@@ -340,7 +340,9 @@ class knight:
 
     def draw(self):
         self.cur_state.draw(self)
-
+        for i in range(self.life):
+            self.hp_image.clip_draw(0, 0, 40, 50, 100 + 50*i, 550)
+        draw_rectangle(*self.get_bb())
     def add_event(self, event):
         self.event_que.insert(0, event)
 
@@ -349,3 +351,6 @@ class knight:
             key_event = key_event_table[(event.type, event.key)]
             if self.cur_state != JUMPRUSH:
                 self.add_event(key_event)
+
+    def get_bb(self):
+        return 350, 60, 450, 160
