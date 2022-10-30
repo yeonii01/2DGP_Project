@@ -31,9 +31,10 @@ def exit():
     game_world.clear()
 
 
-timer = 0
+timer1 = 0
+timer2 = 0
 def update():
-    global timer
+    global timer1, timer2
 
     for game_object in game_world.all_objects():
         if Map.cur_state == 'start':
@@ -41,30 +42,31 @@ def update():
         else:
             game_object.update()
 
+    if timer1 >= 0:
+        timer1 -= 1
 
-    if math.fabs(knight.x - GroundMonster.x <= 150):
-        if knight.cur_state == Knight.ATTACK:
-            GroundMonster.life -= 1
-            GroundMonster.x -= GroundMonster.dir * 70
-            print('COLLISION')
+    else:
+        if math.fabs(knight.x - GroundMonster.x <= 150):
+            if knight.cur_state == Knight.ATTACK:
+                GroundMonster.life -= 1
+                GroundMonster.x -= GroundMonster.dir * 70
+                timer1 = 100
 
-    if timer >= 0:
-        timer -= 1
+    if timer2 >= 0:
+        timer2 -= 1
 
     else:
         if collide(knight, GroundMonster):
             if knight.cur_state != Knight.ATTACK:
                 if knight. life > 0:
                     knight.life -= 1
-                    timer = 10
+                    timer2 = 100
 
     if knight.life == 0:
         pass
 
     if GroundMonster.life == 0:
         GroundMonster.cur_state = Enemy.DIE
-
-
 
 def draw_world():
     for game_object in game_world.all_objects():
@@ -94,8 +96,6 @@ def pause():
 
 def resume():
     pass
-
-
 
 def test_self():
     import play_state
