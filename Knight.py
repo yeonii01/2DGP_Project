@@ -1,5 +1,6 @@
 from pico2d import *
 from Map import map
+import game_framework
 RD, LD, RU, LU, UD, DD, UU, DU, Z, X, C = range(11)
 event_name = ['RD','LD','RU','LU', 'UD', 'DD','UU','DU', 'Z','X','C']
 
@@ -17,11 +18,22 @@ key_event_table = {
     (SDL_KEYDOWN, SDLK_x): X
 }
 
+PIXEL_PER_METER = (10.0/ 0.3)
+RUN_SPEED_KMPH = 20.0
+RUN_SPEED_MPM = (RUN_SPEED_KMPH*1000.0/60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM/60.0)
+RUN_SPEED_PPS = (RUN_SPEED_KMPH*PIXEL_PER_METER)
+
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 10
+
 class IDLE:
     @staticmethod
     def enter(self,event):
         # self.dir = 0
         self.frame = 0
+        global FRAMES_PER_ACTION
         pass
 
     @staticmethod
@@ -30,21 +42,21 @@ class IDLE:
 
     @staticmethod
     def do(self):
-        delay(0.2)
-        self.frame = (self.frame+1) % 2
+        FRAMES_PER_ACTION = 2
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
 
     @staticmethod
     def draw(self):
         if self.face_dir == 1:
-            self.image_r.clip_draw(self.frame * 80, 304, 80, 80, 400, self.y)
+            self.image_r.clip_draw(int(self.frame) * 80, 304, 80, 80, 400, self.y)
         else:
-            self.image_l.clip_draw(942 - self.frame * 80, 304, 80, 80, 400, self.y)
+            self.image_l.clip_draw(942 - int(self.frame) * 80, 304, 80, 80, 400, self.y)
 class UP:
     @staticmethod
     def enter(self,event):
         # self.dir = self.face_dir
-        self.frame = 3
-        pass
+        self.frame = 0
+        global FRAMES_PER_ACTION
 
     @staticmethod
     def exit(self, event):
@@ -52,20 +64,22 @@ class UP:
 
     @staticmethod
     def do(self):
-        delay(0.4)
-        self.frame = (self.frame + 1) % 3 + 3
+        FRAMES_PER_ACTION = 3
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3 + 3
 
     @staticmethod
     def draw(self):
         if self.face_dir == 1:
-            self.image_r.clip_draw(self.frame * 80, 304, 80, 80, 400, self.y)
+            self.image_r.clip_draw(int(self.frame) * 80, 304, 80, 80, 400, self.y)
         else:
-            self.image_l.clip_draw(942 - self.frame * 80, 304, 80, 80, 400, self.y)
+            self.image_l.clip_draw(942 - int(self.frame) * 80, 304, 80, 80, 400, self.y)
 class DOWN:
     @staticmethod
     def enter(self,event):
         # self.dir = self.face_dir
-        self.frame = 7
+        self.frame = 0
+        global FRAMES_PER_ACTION
+        FRAMES_PER_ACTION = 3
         pass
 
     @staticmethod
@@ -74,19 +88,20 @@ class DOWN:
 
     @staticmethod
     def do(self):
-        delay(0.4)
-        self.frame = (self.frame + 1) % 3 + 7
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3 + 7
+
 
     @staticmethod
     def draw(self):
         if self.face_dir == 1:
-            self.image_r.clip_draw(self.frame * 80, 623, 80, 80, 400, self.y)
+            self.image_r.clip_draw(int(self.frame) * 80, 623, 80, 80, 400, self.y)
         else:
-            self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, 400, self.y)
+            self.image_l.clip_draw(942 - int(self.frame) * 80, 623, 80, 80, 400, self.y)
 
 class RUN:
     @staticmethod
     def enter(self,event):
+        global FRAMES_PER_ACTION
         self.frame = 0
         self.dir = 0
         if event == RD:
@@ -107,22 +122,20 @@ class RUN:
         pass
     @staticmethod
     def do(self):
-        delay(0.05)
-        self.frame = (self.frame + 1) % 9
-        if self.dir == 1:
-            self.x += 7
-        else:
-            self.x -= 7
+        FRAMES_PER_ACTION = 9
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 9
+        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.3
 
     @staticmethod
     def draw(self):
         if self.dir == 1:
-            self.image_r.clip_draw(self.frame * 80, 942, 80, 80, 400, self.y)
+            self.image_r.clip_draw(int(self.frame) * 80, 942, 80, 80, 400, self.y)
         else:
-            self.image_l.clip_draw(942 - self.frame * 80, 942, 80, 80, 400, self.y)
+            self.image_l.clip_draw(942 - int(self.frame) * 80, 942, 80, 80, 400, self.y)
 class ATTACK:
     @staticmethod
     def enter(self, event):
+        global FRAMES_PER_ACTION
         # self.dir = self.face_dir
         self.frame = 0
         pass
@@ -133,127 +146,118 @@ class ATTACK:
         pass
     @staticmethod
     def do(self):
-        delay(0.05)
-        self.frame = (self.frame + 1) % 5
-        if self.frame == 0:
+        FRAMES_PER_ACTION = 5
+        self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
+        if int(self.frame) >= 5:
             self.frame = 0
             self.cur_state = IDLE
 
     @staticmethod
     def draw(self):
         if self.face_dir == 1:
-            self.image_r.clip_draw(self.frame * 80, 623, 80, 80, 400, self.y)
+            self.image_r.clip_draw(int(self.frame) * 80, 623, 80, 80, 400, self.y)
         else:
-            self.image_l.clip_draw(942 - self.frame * 80, 623, 80, 80, 400, self.y)
+            self.image_l.clip_draw(942 - int(self.frame) * 80, 623, 80, 80, 400, self.y)
 
 class JUMP:
     @staticmethod
     def enter(self, event):
+        global FRAMES_PER_ACTION
         self.frame = 0
         self.savey = self.y
         self.pre_state = JUMP
     @staticmethod
     def exit(self, event):
-        # self.y = self.savey
         self.frame = 0
-        # self.jumpcount = 0
-        # self.cur_state = IDLE
-        # self.dir = self.face_dir
     @staticmethod
     def do(self):
-        delay(0.07)
-        self.jumpcount += 1
-        self.frame = (self.frame + 1) % 12
-        if self.frame == 0:
+        FRAMES_PER_ACTION = 12
+        self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
+        self.jumpcount = self.frame
+        if self.frame >= 12:
             self.jumpcount = 0
             self.y = self.savey
             self.cur_state = IDLE
+            self.savey = 0
         elif self.jumpcount <= 6:
-            self.y += 25
+            self.y += RUN_SPEED_PPS * game_framework.frame_time
         elif self.jumpcount <= 12 and self.jumpcount >= 6:
-            self.y -= 25
+            self.y -= RUN_SPEED_PPS * game_framework.frame_time
+
     @staticmethod
     def draw(self):
         if self.face_dir == 1:
-            self.image_r.clip_draw(self.frame * 80, 223, 80, 80, 400, self.y)
+            self.image_r.clip_draw(int(self.frame) * 80, 223, 80, 80, 400, self.y)
         else:
-            self.image_l.clip_draw(942 - self.frame * 80, 223, 80, 80, 400, self.y)
+            self.image_l.clip_draw(942 - int(self.frame) * 80, 223, 80, 80, 400, self.y)
 
 class RUNJUMP:
     @staticmethod
     def enter(self, event):
+        global FRAMES_PER_ACTION
         self.frame = 0
         self.savey = self.y
         self.pre_state = RUNJUMP
     @staticmethod
     def exit(self, event):
-        # self.y = self.savey
         self.frame = 0
-        # self.jumpcount = 0
-        # self.cur_state = RUN
-        # self.face_dir = self.dir
         pass
     @staticmethod
     def do(self):
-        delay(0.07)
-        self.jumpcount += 1
-        self.frame = (self.frame + 1) % 12
-        if self.frame == 0:
+        FRAMES_PER_ACTION = 12
+        self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
+        self.jumpcount = self.frame
+        if self.frame >= 12:
             self.jumpcount = 0
             self.y = self.savey
             self.cur_state = RUN
             self.face_dir = self.dir
         elif self.jumpcount <= 6:
-            self.y += 25
+            self.y += RUN_SPEED_PPS * game_framework.frame_time
         elif self.jumpcount <= 12 and self.jumpcount >= 6:
-            self.y -= 25
-        if self.dir == 1:
-            self.x += 7
-        else:
-            self.x -= 7
+            self.y -= RUN_SPEED_PPS * game_framework.frame_time
+        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.3
+
     @staticmethod
     def draw(self):
         if self.dir == 1:
-            self.image_r.clip_draw(self.frame * 80, 223, 80, 80, 400, self.y)
+            self.image_r.clip_draw(int(self.frame) * 80, 223, 80, 80, 400, self.y)
         else:
-            self.image_l.clip_draw(942 - self.frame * 80, 223, 80, 80, 400, self.y)
+            self.image_l.clip_draw(942 - int(self.frame) * 80, 223, 80, 80, 400, self.y)
 
 class RUSH:
     @staticmethod
     def enter(self, event):
+        global FRAMES_PER_ACTION
         self.frame = 0
-        # self.dir = self.face_dir
         pass
 
     @staticmethod
     def exit(self, event):
-        # self.face_dir = self.dir
         pass
     @staticmethod
     def do(self):
-        delay(0.02)
-        self.frame = (self.frame + 1) % 12
-        self.dashframe = (self.frame + 1) % 5
-        if self.face_dir == 1:
-            self.x += 10
-        else:
-            self.x -= 10
-        if self.frame == 0:
+        FRAMES_PER_ACTION = 12
+        self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
+        self.dashframe = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.6
+        if self.frame >= 12:
             self.frame = 0
             self.cur_state = IDLE
     @staticmethod
     def draw(self):
         if self.face_dir == 1:
-            self.image_r.clip_draw(self.frame * 80, 223, 80, 80, 400, self.y)
-            self.dash_image_right.clip_draw(self.dashframe * 80, 0, 80, 80, 400, self.y)
+            self.image_r.clip_draw(int(self.frame) * 80, 223, 80, 80, 400, self.y)
+            self.dash_image_right.clip_draw(int(self.dashframe) * 80, 0, 80, 80, 400, self.y)
         else:
-            self.image_l.clip_draw(942 - self.frame * 80, 223, 80, 80, 400, self.y)
-            self.dash_image_left.clip_draw(self.dashframe*80,0,80,80,400,self.y)
+            self.image_l.clip_draw(942 - int(self.frame) * 80, 223, 80, 80, 400, self.y)
+            self.dash_image_left.clip_draw(int(self.dashframe)*80,0,80,80,400,self.y)
 
 class JUMPRUSH:
     @staticmethod
     def enter(self, event):
         self.frame = 0
+        global FRAMES_PER_ACTION
         # self.dir = self.face_dir
         pass
 
@@ -263,14 +267,11 @@ class JUMPRUSH:
         pass
     @staticmethod
     def do(self):
-        delay(0.02)
-        self.frame = (self.frame + 1) % 12
-        self.dashframe = (self.frame + 1) % 5
-        if self.face_dir == 1:
-            self.x += 10
-        else:
-            self.x -= 10
-        if self.frame == 0:
+        FRAMES_PER_ACTION = 12
+        self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
+        self.dashframe = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.6
+        if self.frame >= 12:
             if self.jumpcount < 6:
                 self.jumpcount = 12 - self.jumpcount
                 self.frame = self.jumpcount
@@ -283,11 +284,11 @@ class JUMPRUSH:
     @staticmethod
     def draw(self):
         if self.face_dir == 1:
-            self.image_r.clip_draw(self.frame * 80, 223, 80, 80, 400, self.y)
-            self.dash_image_right.clip_draw(self.dashframe * 80, 0, 80, 80, 400, self.y)
+            self.image_r.clip_draw(int(self.frame) * 80, 223, 80, 80, 400, self.y)
+            self.dash_image_right.clip_draw(int(self.dashframe) * 80, 0, 80, 80, 400, self.y)
         else:
-            self.image_l.clip_draw(942 - self.frame * 80, 223, 80, 80, 400, self.y)
-            self.dash_image_left.clip_draw(self.dashframe*80,0,80,80,400,self.y)
+            self.image_l.clip_draw(942 - int(self.frame) * 80, 223, 80, 80, 400, self.y)
+            self.dash_image_left.clip_draw(int(self.dashframe)*80,0,80,80,400,self.y)
 
 
 
