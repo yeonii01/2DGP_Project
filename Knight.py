@@ -239,7 +239,7 @@ class RUSH:
     def do(self):
         FRAMES_PER_ACTION = 12
         self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
-        self.dashframe = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+        self.dashframe = (self.frame/2) % 5
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.6
         if self.frame >= 12:
             self.frame = 0
@@ -263,13 +263,13 @@ class JUMPRUSH:
 
     @staticmethod
     def exit(self, event):
-        self.dir = self.face_dir
+        # self.dir = self.face_dir
         pass
     @staticmethod
     def do(self):
         FRAMES_PER_ACTION = 12
         self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
-        self.dashframe = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+        self.dashframe = (self.frame/2) % 5
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.6
         if self.frame >= 12:
             if self.jumpcount < 6:
@@ -330,7 +330,7 @@ class knight:
 
         if self.event_que:
             event = self.event_que.pop()
-            self.pre_state = event
+            # self.pre_state = event
             if self.frame !=0 and (self.cur_state == JUMP or self.cur_state == JUMPRUSH or self.cur_state == RUNJUMP or self.cur_state == RUSH):
                 self.cur_state.exit(self, event)
             try:
