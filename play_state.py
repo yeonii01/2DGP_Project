@@ -55,7 +55,7 @@ def update():
 
         if timer2 >= 0:
             if timer2 >= 1900:
-                knight.x = knight.x - knight.dir * 1
+                knight.x = knight.x + GroundMonster.dir * 1
             timer2 -= 1
 
         else:
@@ -66,6 +66,7 @@ def update():
                         timer2 = 2000
 
     if knight.life <= 0:
+        Map.cur_state = 'die'
         pass
 
     if GroundMonster.life <= 0:
@@ -73,7 +74,7 @@ def update():
 
 def draw_world():
     for game_object in game_world.all_objects():
-        if Map.cur_state == 'start':
+        if Map.cur_state == 'start' or Map.cur_state == 'die':
             Map.draw()
         else:
             game_object.draw()

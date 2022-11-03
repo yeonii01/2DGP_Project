@@ -13,8 +13,9 @@ class map:
         self.start_titleimage = load_image('start_title.png')
         self.start_font = load_image('start_font.png')
         self.start_cursor = load_image('cursor.png')
-        self.state = ['start', 'map1']
+        self.state = ['start', 'map1', 'die']
         self.cur_state = 'start'
+        self.font = load_font('Cafe24Danjunghae.TTF', 60)
     def update(self):
         if self.cur_state == 'start':
             events = get_events()
@@ -37,3 +38,7 @@ class map:
             self.map_ui.clip_draw(0,0,100,60,60,560)
             for x in range(100):
                 self.map1_floor.clip_draw(0, 0, 150, 25, 75 * x - play_state.knight.x, 70)
+        elif self.cur_state == 'die':
+            self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
+            play_state.knight.x = 0
+            self.font.draw(280, 300, f'(YOU DIE)',(255,255,255))
