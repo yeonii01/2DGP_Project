@@ -180,17 +180,17 @@ class groundmonster:
 
 class geo:
     def __init__(self):
-        self.geonum = random.randint(1, 5)
+        self.geonum = random.randint(2, 5)
         self.geo_image = load_image('geo_item.png')
-        self.x, self.y = random.randint(play_state.GroundMonster.x - 50, play_state.GroundMonster.x + 50), play_state.GroundMonster.y
+        self.x, self.y = random.randint( int(play_state.GroundMonster.x - 50), int(play_state.GroundMonster.x + 50)), play_state.GroundMonster.y
 
     def update(self):
         pass
 
     def draw(self):
-        if play_state.GroundMonster.cur_state == play_state.ENEMY.DIE:
-            self.geo_image.clip_draw(0,0,58,61,self.x,self.y,40,40)
+        if play_state.GroundMonster.cur_state == DIE:
+            self.geo_image.clip_draw(0,0,58,61,self.x - play_state.knight.x + 400,self.y,40,40)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 20, self.y - 20, self.x + 20, self.y + 20
+        return self.x - play_state.knight.x + 400 - 20, self.y - 20, self.x - play_state.knight.x + 400 + 20, self.y + 20
