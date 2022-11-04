@@ -19,15 +19,15 @@ def handle_events():
 
 
 # 초기화
+geonum = random.randint(2,5)
 def enter():
-    global knight, Map, GroundMonster, Geo, Geos
+    global knight, Map, GroundMonster, Geo, Geos, geonum
     Map = map()
     knight = Knight.knight()
     GroundMonster = Enemy.groundmonster()
-    Geo = geo()
-    Geos = [Geo for i in range(Geo.geonum)]
-    game_world.add_object(knight, 1)
+    Geos = [geo() for i in range(geonum)]
     game_world.add_object(GroundMonster, 1)
+    game_world.add_object(knight, 1)
     game_world.add_object(Map, 0)
 
 # 종료
@@ -51,10 +51,10 @@ def update():
             timer1 -= 1
 
         else:
-            if math.fabs(knight.x - (GroundMonster.x - knight.x + 400) <= 100):
+            if math.fabs(knight.x - (GroundMonster.x - knight.x + 400) <= 75):
                 if knight.cur_state == Knight.ATTACK:
                     GroundMonster.life -= 1
-                    GroundMonster.x -= GroundMonster.dir * 100
+                    GroundMonster.x -= GroundMonster.dir * 75
                     timer1 = 500
 
         if timer2 >= 0:
@@ -74,6 +74,7 @@ def update():
 
     if GroundMonster.life == 0:
         GroundMonster.cur_state = Enemy.DIE
+
         for Geo in Geos:
             game_world.add_object(Geo, 1)
             Geo.x, Geo.y = random.randint(int(GroundMonster.x - 50),
@@ -86,6 +87,10 @@ def draw_world():
             Map.draw()
         else:
             game_object.draw()
+            for Geo in Geos:
+                Geo.draw()
+                print(Geo.x)
+                print(geonum)
 
 def draw():
     clear_canvas()
