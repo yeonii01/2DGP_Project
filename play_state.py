@@ -81,16 +81,19 @@ def update():
                                         int(GroundMonster.x + 50)), GroundMonster.y - 20
         GroundMonster.life = -1
 
+    for Geo in Geos.copy():
+        if collide(knight, Geo):
+            knight.itemnum += 1
+            Geos.remove(Geo)
+            game_world.remove_object(Geo)
+
+
 def draw_world():
     for game_object in game_world.all_objects():
         if Map.cur_state == 'start' or Map.cur_state == 'die':
             Map.draw()
         else:
             game_object.draw()
-            for Geo in Geos:
-                Geo.draw()
-                print(Geo.x)
-                print(geonum)
 
 def draw():
     clear_canvas()

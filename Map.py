@@ -16,6 +16,8 @@ class map:
         self.state = ['start', 'map1', 'die']
         self.cur_state = 'start'
         self.font = load_font('Cafe24Danjunghae.TTF', 60)
+        self.smallfont = load_font('Cafe24Danjunghae.TTF', 40)
+        self.geo_image = load_image('geo_item.png')
     def update(self):
         if self.cur_state == 'start':
             events = get_events()
@@ -38,6 +40,8 @@ class map:
             self.map_ui.clip_draw(0,0,100,60,60,560)
             for x in range(100):
                 self.map1_floor.clip_draw(0, 0, 150, 25, 75 * x - play_state.knight.x, 70)
+            self.geo_image.clip_draw(0, 0, 58, 61, 40, 500, 40, 40)
+            self.smallfont.draw(80, 495, f'{play_state.knight.itemnum}',(255,255,255))
         elif self.cur_state == 'die':
             self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
             play_state.knight.x = 0

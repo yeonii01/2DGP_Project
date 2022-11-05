@@ -311,7 +311,7 @@ class knight:
         self.jumpcount = 0
         self.dir, self.face_dir = 0, 1
         self.savey = 0
-
+        self.itemnum = 0
         self.life = 5
 
         self.event_que = []
