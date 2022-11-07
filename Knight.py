@@ -173,16 +173,17 @@ class JUMP:
     def do(self):
         FRAMES_PER_ACTION = 12
         self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
-        self.jumpcount = self.frame
+        self.jumpcount = int(self.frame)
+        print(self.jumpcount)
         if self.frame >= 12:
             self.jumpcount = 0
             self.y = self.savey
             self.cur_state = IDLE
             self.savey = 0
-        elif self.jumpcount <= 6:
-            self.y += RUN_SPEED_PPS * game_framework.frame_time
+        if self.jumpcount <= 6:
+            self.y += RUN_SPEED_PPS * game_framework.frame_time * 1.5
         elif self.jumpcount <= 12 and self.jumpcount >= 6:
-            self.y -= RUN_SPEED_PPS * game_framework.frame_time
+            self.y -= RUN_SPEED_PPS * game_framework.frame_time * 1.5
 
     @staticmethod
     def draw(self):
@@ -213,10 +214,10 @@ class RUNJUMP:
             self.cur_state = RUN
             self.face_dir = self.dir
         elif self.jumpcount <= 6:
-            self.y += RUN_SPEED_PPS * game_framework.frame_time
+            self.y += RUN_SPEED_PPS * game_framework.frame_time * 1.5
         elif self.jumpcount <= 12 and self.jumpcount >= 6:
-            self.y -= RUN_SPEED_PPS * game_framework.frame_time
-        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.3
+            self.y -= RUN_SPEED_PPS * game_framework.frame_time * 1.5
+        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.6
 
     @staticmethod
     def draw(self):
@@ -354,4 +355,4 @@ class knight:
                 self.add_event(key_event)
 
     def get_bb(self):
-        return 350, 60, 450, 160
+        return 370, self.y - 40, 430, self.y + 40

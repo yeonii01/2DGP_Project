@@ -58,7 +58,6 @@ class RUN:
         if math.fabs(self.x - play_state.knight.x) <= 200:
             if self.timer <= 0:
                 self.cur_state = READYATTACK
-        pass
 
     @staticmethod
     def draw(self):
@@ -112,10 +111,9 @@ class ATTACK:
     def do(self):
         FRAMES_PER_ACTION = 4
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
-        print(self.frame)
         if int(self.frame) == 0:
             self.cur_state = RUN
-            self.timer = 1000
+            self.timer = 2000
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.5
         pass
 
@@ -157,14 +155,15 @@ class DIE:
 
 class groundmonster:
     def __init__(self):
-        self.x, self.y = 900, 120
+        self.x, self.y = 1300, 120
         self.frame = 0
         self.timer = 0
         self.cur_state = IDLE
         self.dir = -1
-        self.life = 5
+        self.life = 3
         self.cur_state.enter(self)
         self.ground_monster_image = load_image('ground_monster1.png')
+
     def update(self):
         if self.timer >= 0:
             self.timer -= 1

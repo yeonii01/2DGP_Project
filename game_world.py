@@ -41,6 +41,3 @@ def clear():
         del o
     for layer in objects:
         layer.clear()
-
-
-
