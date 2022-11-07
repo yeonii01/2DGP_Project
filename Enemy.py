@@ -155,7 +155,7 @@ class DIE:
 
 class groundmonster:
     def __init__(self):
-        self.x, self.y = 1300, 120
+        self.x, self.y = 1700, 120
         self.frame = 0
         self.timer = 0
         self.cur_state = IDLE

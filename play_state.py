@@ -63,7 +63,7 @@ def update():
             Map.update()
         else:
             game_object.update()
-
+    # 블록 충돌체크
     for i in blocks1:
         if collide(knight, i):
             knight.y = i.y + 50
@@ -74,15 +74,17 @@ def update():
             knight.y = i.y + 50
             check = True
 
-    if check == False:
-        knight.y -= 1
+    if knight.cur_state != Knight.JUMP and knight.cur_state != Knight.JUMPRUSH and knight.cur_state != Knight.RUNJUMP:
+        if check == False:
+            knight.y -= 1
 
+    # 몬스터 타이머 체크 충돌체크
     if GroundMonster.cur_state != Enemy.DIE:
         if timer1 >= 0:
             timer1 -= 1
 
         else:
-            if math.fabs(knight.x - (GroundMonster.x - knight.x + 400) <= 75):
+            if math.fabs(GroundMonster.x - knight.x) <= 120:
                 if knight.cur_state == Knight.ATTACK:
                     GroundMonster.life -= 1
                     print(GroundMonster.life)
@@ -107,12 +109,14 @@ def update():
     if GroundMonster.life == 0:
         print(GroundMonster.life)
         GroundMonster.cur_state = Enemy.DIE
+        # 아이템 소환
         for Geo in Geos:
             game_world.add_object(Geo, 1)
             Geo.x, Geo.y = random.randint(int(GroundMonster.x - 50),
                                         int(GroundMonster.x + 50)), GroundMonster.y - 20
         GroundMonster.life = -1
 
+    # 아이템 획득
     if GroundMonster.life <= 0:
         for Geo in Geos.copy():
             if collide(knight, Geo):

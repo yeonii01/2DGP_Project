@@ -181,9 +181,9 @@ class JUMP:
             self.cur_state = IDLE
             self.savey = 0
         if self.jumpcount <= 6:
-            self.y += RUN_SPEED_PPS * game_framework.frame_time * 1.5
+            self.y += RUN_SPEED_PPS * game_framework.frame_time
         elif self.jumpcount <= 12 and self.jumpcount >= 6:
-            self.y -= RUN_SPEED_PPS * game_framework.frame_time * 1.5
+            self.y -= RUN_SPEED_PPS * game_framework.frame_time
 
     @staticmethod
     def draw(self):
@@ -214,9 +214,9 @@ class RUNJUMP:
             self.cur_state = RUN
             self.face_dir = self.dir
         elif self.jumpcount <= 6:
-            self.y += RUN_SPEED_PPS * game_framework.frame_time * 1.5
+            self.y += RUN_SPEED_PPS * game_framework.frame_time
         elif self.jumpcount <= 12 and self.jumpcount >= 6:
-            self.y -= RUN_SPEED_PPS * game_framework.frame_time * 1.5
+            self.y -= RUN_SPEED_PPS * game_framework.frame_time
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.6
 
     @staticmethod
@@ -271,7 +271,7 @@ class JUMPRUSH:
         FRAMES_PER_ACTION = 12
         self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
         self.dashframe = (self.frame/2) % 5
-        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.6
+        self.x += self.face_dir * RUN_SPEED_PPS * game_framework.frame_time * 0.6
         if self.frame >= 12:
             if self.jumpcount < 6:
                 self.jumpcount = 12 - self.jumpcount
