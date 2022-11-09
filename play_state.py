@@ -7,6 +7,7 @@ from Enemy import geo
 import game_world
 import random
 from ground import Ground
+from obstacle import Obstacle
 
 def handle_events():
     events = get_events()
@@ -20,12 +21,15 @@ def handle_events():
 
 # 초기화
 geonum = random.randint(2,5)
-tempx = 0
+tempx,otempx = 0,0
 
 def enter():
-    global knight, Map, GroundMonster, Geo, Geos, geonum, blocks1, blocks2, tempx
+    global knight, Map, GroundMonster, Geo, Geos, geonum, blocks1, blocks2, blocks3, tempx, obstacle, obstacles, otempx
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
+    blocks3 = Ground()
+    obstacles = [Obstacle()for i in range(3)]
+    obstacle = Obstacle()
     Map = map()
     knight = Knight.knight()
     GroundMonster = Enemy.groundmonster()
@@ -45,6 +49,18 @@ def enter():
         i.x = 140 * tempx
         tempx += 1
 
+    game_world.add_object(blocks3, 0)
+    blocks3.x = 1970
+
+    game_world.add_object(obstacle, 0)
+    obstacle.x = 1820 + 150 * otempx
+
+    otempx += 2
+
+    for o in obstacles:
+        game_world.add_object(o, 0)
+        o.x = 1820 + 150 * otempx
+        otempx += 1
 # 종료
 def exit():
     game_world.clear()
@@ -73,6 +89,10 @@ def update():
         if collide(knight, i):
             knight.y = i.y + 50
             check = True
+
+    if collide(knight, blocks3):
+        knight.y = i.y + 50
+        check = True
 
     if knight.cur_state != Knight.JUMP and knight.cur_state != Knight.JUMPRUSH and knight.cur_state != Knight.RUNJUMP:
         if check == False:
