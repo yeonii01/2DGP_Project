@@ -7,8 +7,8 @@ from Enemy import geo
 import game_world
 import random
 from ground import Ground
+from ground import FGround
 from obstacle import Obstacle
-
 def handle_events():
     events = get_events()
     for event in events:
@@ -24,10 +24,12 @@ geonum = random.randint(2,5)
 tempx,otempx = 0,0
 
 def enter():
-    global knight, Map, GroundMonster, Geo, Geos, geonum, blocks1, blocks2, blocks3, tempx, obstacle, obstacles, otempx
+    global knight, Map, GroundMonster, Geo, Geos, geonum, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
+    blocks4 = [FGround() for i in range(3)]
+    blocks5 = [Ground() for i in range(6)]
     obstacles = [Obstacle()for i in range(3)]
     obstacle = Obstacle()
     Map = map()
@@ -37,6 +39,8 @@ def enter():
     game_world.add_object(GroundMonster, 1)
     game_world.add_object(knight, 1)
     game_world.add_object(Map, 0)
+
+    # 블록 그리기
     for i in blocks1:
         game_world.add_object(i, 0)
         i.x = 140 * tempx
@@ -49,18 +53,31 @@ def enter():
         i.x = 140 * tempx
         tempx += 1
 
+    tempx += 1
     game_world.add_object(blocks3, 0)
-    blocks3.x = 1970
+    blocks3.x = 140 * tempx
 
+    # 장애물 시작
     game_world.add_object(obstacle, 0)
     obstacle.x = 1820 + 150 * otempx
 
     otempx += 2
 
+    for i in blocks4:
+        game_world.add_object(i, 0)
+        i.x = 20 + 150 * tempx
+        tempx += 1
+
     for o in obstacles:
         game_world.add_object(o, 0)
         o.x = 1820 + 150 * otempx
         otempx += 1
+
+
+    for i in blocks5:
+        game_world.add_object(i, 0)
+        i.x = 20 + 150 * tempx
+        tempx += 1
 # 종료
 def exit():
     game_world.clear()
@@ -91,8 +108,18 @@ def update():
             check = True
 
     if collide(knight, blocks3):
-        knight.y = i.y + 50
+        knight.y = blocks3.y + 50
         check = True
+
+    for i in blocks4:
+        if collide(knight, i):
+            knight.y = i.y + 60
+            check = True
+
+    for i in blocks5:
+        if collide(knight, i):
+            knight.y = i.y + 50
+            check = True
 
     if knight.cur_state != Knight.JUMP and knight.cur_state != Knight.JUMPRUSH and knight.cur_state != Knight.RUNJUMP:
         if check == False:
