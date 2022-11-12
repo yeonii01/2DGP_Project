@@ -92,7 +92,7 @@ def update():
     check = False
 
     for game_object in game_world.all_objects():
-        if Map.cur_state == 'start':
+        if Map.cur_state == 'start' or Map.cur_state == 'die':
             Map.update()
         else:
             game_object.update()

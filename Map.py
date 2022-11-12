@@ -11,22 +11,23 @@ class map:
         self.start_titleimage = load_image('start_title.png')
         self.start_font = load_image('start_font.png')
         self.start_cursor = load_image('cursor.png')
-        self.state = ['start', 'map1', 'die']
+        self.state = ['start', 'map1', 'die', 'pause']
         self.cur_state = 'start'
-        self.font = load_font('Cafe24Danjunghae.TTF', 60)
+        self.font = load_font('Cafe24Danjunghae.TTF', 70)
         self.smallfont = load_font('Cafe24Danjunghae.TTF', 40)
         self.geo_image = load_image('geo_item.png')
         self.start_bench = load_image('spider_town_bench.png')
     def update(self):
-        if self.cur_state == 'start':
+        if self.cur_state == 'start' or self.cur_state == 'die' or self.cur_state == 'pause':
             events = get_events()
             for event in events:
                 if event.type == SDL_MOUSEMOTION:
                     self.cursor_x, self.cursor_y = event.x, 600 - 1 - event.y
-                if event.type == SDL_MOUSEBUTTONDOWN:
-                    if event.x <=573 and event.x >=170:
-                        if 600 - 1 - event.y >=53 and 600 - 1 -event.y <=203:
-                            self.cur_state = 'map1'
+                if self.cur_state == 'start':
+                    if event.type == SDL_MOUSEBUTTONDOWN:
+                        if event.x <=573 and event.x >=170:
+                            if 600 - 1 - event.y >=53 and 600 - 1 -event.y <=203:
+                                self.cur_state = 'map1'
 
     def draw(self):
         if self.cur_state == 'start':
@@ -42,5 +43,10 @@ class map:
             self.smallfont.draw(80, 495, f'{play_state.knight.itemnum}',(255,255,255))
         elif self.cur_state == 'die':
             self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
-            play_state.knight.x = 0
-            self.font.draw(280, 300, f'(YOU DIE)',(255,255,255))
+            self.font.draw(280, 400, f'YOU DIE',(255,255,255))
+            self.smallfont.draw(320, 200, f'RESTART',(255,255,255))
+            self.smallfont.draw(360, 150, f'QUIT',(255,255,255))
+            self.start_cursor.clip_draw(0,0,37,37,self.cursor_x,self.cursor_y)
+
+
+
