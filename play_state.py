@@ -16,6 +16,27 @@ def handle_events():
             game_framework.quit()
         else:
             knight.handle_event(event)
+        if Map.cur_state == 'start' or Map.cur_state == 'die' or Map.cur_state == 'pause':
+            if event.type == SDL_MOUSEMOTION:
+                Map.cursor_x, Map.cursor_y = event.x, 600 - 1 - event.y
+            if Map.cur_state == 'start':
+                if event.type == SDL_MOUSEBUTTONDOWN:
+                    if event.x <= 573 and event.x >= 170:
+                        if 600 - 1 - event.y >= 53 and 600 - 1 - event.y <= 203:
+                            Map.cur_state = 'map1'
+            elif Map.cur_state == 'die':
+
+                pass
+
+            elif Map.cur_state == 'pause':
+
+                pass
+
+        if Map.cur_state == 'map1':
+            if event.type == SDL_KEYDOWN:
+                if event.key == SDLK_ESCAPE:
+                    Map.cur_state = 'pause'
+
 
 # 초기화
 geonum = random.randint(2,5)
@@ -172,7 +193,7 @@ def update():
 
 def draw_world():
     for game_object in game_world.all_objects():
-        if Map.cur_state == 'start' or Map.cur_state == 'die' or Map.cur_state == 'pause':
+        if Map.cur_state == 'start' or Map.cur_state == 'die'or Map.cur_state == 'pause':
             Map.draw()
         else:
             game_object.draw()
