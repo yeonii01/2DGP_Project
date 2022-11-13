@@ -14,8 +14,6 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             game_framework.quit()
-        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
-            game_framework.quit()
         else:
             knight.handle_event(event)
 
@@ -174,7 +172,7 @@ def update():
 
 def draw_world():
     for game_object in game_world.all_objects():
-        if Map.cur_state == 'start' or Map.cur_state == 'die':
+        if Map.cur_state == 'start' or Map.cur_state == 'die' or Map.cur_state == 'pause':
             Map.draw()
         else:
             game_object.draw()

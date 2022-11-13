@@ -18,9 +18,9 @@ class map:
         self.geo_image = load_image('geo_item.png')
         self.start_bench = load_image('spider_town_bench.png')
     def update(self):
-        if self.cur_state == 'start' or self.cur_state == 'die' or self.cur_state == 'pause':
-            events = get_events()
-            for event in events:
+        events = get_events()
+        for event in events:
+            if self.cur_state == 'start' or self.cur_state == 'die' or self.cur_state == 'pause':
                 if event.type == SDL_MOUSEMOTION:
                     self.cursor_x, self.cursor_y = event.x, 600 - 1 - event.y
                 if self.cur_state == 'start':
@@ -28,6 +28,17 @@ class map:
                         if event.x <=573 and event.x >=170:
                             if 600 - 1 - event.y >=53 and 600 - 1 -event.y <=203:
                                 self.cur_state = 'map1'
+                elif self.cur_state == 'die':
+                    pass
+
+                elif self.cur_state == 'pause':
+                    pass
+
+            if self.cur_state == 'map1':
+                if event.type == SDL_KEYDOWN:
+                    if event.key == SDLK_ESCAPE:
+                        self.cur_state = 'pause'
+
 
     def draw(self):
         if self.cur_state == 'start':
@@ -47,6 +58,11 @@ class map:
             self.smallfont.draw(320, 200, f'RESTART',(255,255,255))
             self.smallfont.draw(360, 150, f'QUIT',(255,255,255))
             self.start_cursor.clip_draw(0,0,37,37,self.cursor_x,self.cursor_y)
-
+        elif self.cur_state == 'pause':
+            self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
+            self.smallfont.draw(320, 400, f'RESTART', (255, 255, 255))
+            self.smallfont.draw(320, 300, f'RESUME', (255, 255, 255))
+            self.smallfont.draw(360, 200, f'QUIT', (255, 255, 255))
+            self.start_cursor.clip_draw(0,0,37,37,self.cursor_x,self.cursor_y)
 
 
