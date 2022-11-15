@@ -24,13 +24,30 @@ def handle_events():
                     if event.x <= 573 and event.x >= 170:
                         if 600 - 1 - event.y >= 53 and 600 - 1 - event.y <= 203:
                             Map.cur_state = 'map1'
+
             elif Map.cur_state == 'die':
-
-                pass
-
+                if event.type == SDL_MOUSEBUTTONDOWN:
+                    if event.x <= 450 and event.x >= 360:
+                        if 600 - 1 - event.y >= 130 and 600 - 1 - event.y <= 170:
+                            game_framework.quit()
+                    if event.x <= 480 and event.x >= 320:
+                        if 600 - 1 - event.y >= 180 and 600 - 1 - event.y <= 220:
+                            knight.__init__()
+                            GroundMonster.__init__()
+                            Map.cur_state = 'map1'
             elif Map.cur_state == 'pause':
-
-                pass
+                if event.type == SDL_MOUSEBUTTONDOWN:
+                    if event.x <= 450 and event.x >= 360:
+                        if 600 - 1 - event.y >= 180 and 600 - 1 - event.y <= 220:
+                            game_framework.quit()
+                    if event.x <= 480 and event.x >= 320:
+                        if 600 - 1 - event.y >= 280 and 600 - 1 - event.y <= 320:
+                            Map.cur_state = 'map1'
+                    if event.x <= 490 and event.x >= 320:
+                        if 600 - 1 - event.y >= 380 and 600 - 1 - event.y <= 420:
+                            knight.__init__()
+                            GroundMonster.__init__()
+                            Map.cur_state = 'map1'
 
         if Map.cur_state == 'map1':
             if event.type == SDL_KEYDOWN:
