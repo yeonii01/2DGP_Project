@@ -57,22 +57,28 @@ def handle_events():
 
 # 초기화
 geonum = random.randint(2,5)
+geonum2 = random.randint(2,5)
 tempx,otempx = 0,0
 
 def enter():
-    global knight, Map, GroundMonster, Geo, Geos, geonum, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx
+    global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
     blocks4 = [FGround() for i in range(3)]
-    blocks5 = [Ground() for i in range(6)]
+    blocks5 = [Ground() for i in range(12)]
     obstacles = [Obstacle()for i in range(3)]
     obstacle = Obstacle()
     Map = map()
     knight = Knight.knight()
     GroundMonster = Enemy.groundmonster()
+    GroundMonster2 = Enemy.groundmonster()
+    GroundMonster2.type = 2
+    GroundMonster2.x = 3000
     Geos = [geo() for i in range(geonum)]
+    Geos2 = [geo() for i in range(geonum2)]
     game_world.add_object(GroundMonster, 1)
+    game_world.add_object(GroundMonster2, 1)
     game_world.add_object(knight, 1)
     game_world.add_object(Map, 0)
 
@@ -189,8 +195,31 @@ def update():
     if knight.life <= 0 or knight.y <= 0:
         Map.cur_state = 'die'
 
+    if GroundMonster2.cur_state != Enemy.DIE:
+        if timer1 >= 0:
+            timer1 -= 1
+
+        else:
+            if math.fabs(GroundMonster2.x - knight.x) <= 120:
+                if knight.cur_state == Knight.ATTACK:
+                    GroundMonster2.life -= 1
+                    print(GroundMonster2.life)
+                    GroundMonster2.x -= GroundMonster2.dir * 75
+                    timer1 = 500
+
+        if timer2 >= 0:
+            if timer2 >= 1900:
+                knight.x = knight.x + GroundMonster2.dir * 1
+            timer2 -= 1
+
+        else:
+            if collide(knight, GroundMonster2):
+                if knight.cur_state != Knight.ATTACK:
+                    if knight. life > 0:
+                        knight.life -= 1
+                        timer2 = 2000
+
     if GroundMonster.life == 0:
-        print(GroundMonster.life)
         GroundMonster.cur_state = Enemy.DIE
         # 아이템 소환
         for Geo in Geos:
@@ -199,6 +228,15 @@ def update():
                                         int(GroundMonster.x + 50)), GroundMonster.y - 20
         GroundMonster.life = -1
 
+    if GroundMonster2.life == 0:
+        GroundMonster2.cur_state = Enemy.DIE
+        # 아이템 소환
+        for Geo in Geos2:
+            game_world.add_object(Geo, 1)
+            Geo.x, Geo.y = random.randint(int(GroundMonster2.x - 50),
+                                        int(GroundMonster2.x + 50)), GroundMonster2.y - 20
+        GroundMonster2.life = -1
+
     # 아이템 획득
     if GroundMonster.life <= 0:
         for Geo in Geos.copy():
@@ -206,7 +244,12 @@ def update():
                 knight.itemnum += 1
                 Geos.remove(Geo)
                 game_world.remove_object(Geo)
-
+    if GroundMonster2.life <= 0:
+        for Geo in Geos2.copy():
+            if collide(knight, Geo):
+                knight.itemnum += 1
+                Geos2.remove(Geo)
+                game_world.remove_object(Geo)
 
 def draw_world():
     for game_object in game_world.all_objects():

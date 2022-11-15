@@ -26,16 +26,25 @@ class IDLE:
 
     @staticmethod
     def do(self):
-        FRAMES_PER_ACTION = 6
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
-        if math.fabs(self.x - play_state.knight.x) <= 400:
-            self.cur_state = RUN
+        if self.type == 1:
+            FRAMES_PER_ACTION = 6
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
+            if math.fabs(self.x - play_state.knight.x) <= 400:
+                self.cur_state = RUN
+        else:
+            FRAMES_PER_ACTION = 6
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
+            if math.fabs(self.x - play_state.knight.x) <= 400:
+                self.cur_state = RUN
+
 
 
     @staticmethod
     def draw(self):
-        self.ground_monster_image.clip_draw(int(self.frame)*122, 1394, 122, 220, self.x-play_state.knight.x + 400, self.y,75,105)
-
+        if self.type == 1:
+            self.ground_monster_image.clip_draw(int(self.frame)*122, 1394, 122, 220, self.x-play_state.knight.x + 400, self.y,75,105)
+        else:
+            self.ground_monster_image2.clip_draw(int(self.frame)*107, 1119, 107, 160, self.x-play_state.knight.x + 400, self.y,75,105)
 
 class RUN:
     @staticmethod
@@ -49,23 +58,44 @@ class RUN:
 
     @staticmethod
     def do(self):
-        if self.x - play_state.knight.x <= 0:
-            self.dir = 1
+        FRAMES_PER_ACTION = 7
+        if self.type == 1:
+            if self.x - play_state.knight.x <= 0:
+                self.dir = 1
+            else:
+                self.dir = -1
+            self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.1
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 7
+            if math.fabs(self.x - play_state.knight.x) <= 200:
+                if self.timer <= 0:
+                    self.cur_state = READYATTACK
+
         else:
-            self.dir = -1
-        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.1
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 7
-        if math.fabs(self.x - play_state.knight.x) <= 200:
-            if self.timer <= 0:
-                self.cur_state = READYATTACK
+            if self.x - play_state.knight.x <= 0:
+                self.dir = 1
+            else:
+                self.dir = -1
+            self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.1
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 7
+            if math.fabs(self.x - play_state.knight.x) <= 200:
+                if self.timer <= 0:
+                    self.cur_state = READYATTACK
 
     @staticmethod
     def draw(self):
-        if self.dir == -1:
-            self.ground_monster_image.clip_draw(int(self.frame) * 142, 1182, 142, 200, self.x - play_state.knight.x + 400,
+        if self.type == 1:
+            if self.dir == -1:
+                self.ground_monster_image.clip_draw(int(self.frame) * 142, 1182, 142, 200, self.x - play_state.knight.x + 400,
+                                            self.y, 75, 105)
+            else:
+                self.ground_monster_image.clip_composite_draw(int(self.frame) * 142, 1182, 142, 200, 0,'h',self.x - play_state.knight.x + 400,
                                             self.y, 75, 105)
         else:
-            self.ground_monster_image.clip_composite_draw(int(self.frame) * 142, 1182, 142, 200, 0,'h',self.x - play_state.knight.x + 400,
+            if self.dir == -1:
+                self.ground_monster_image2.clip_draw(int(self.frame) * 111, 971, 111, 148, self.x - play_state.knight.x + 400,
+                                            self.y, 75, 105)
+            else:
+                self.ground_monster_image2.clip_composite_draw(int(self.frame) * 111, 971, 111, 148, 0,'h',self.x - play_state.knight.x + 400,
                                             self.y, 75, 105)
 
 class READYATTACK:
@@ -81,19 +111,35 @@ class READYATTACK:
 
     @staticmethod
     def do(self):
-        FRAMES_PER_ACTION = 5
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
-        if self.frame >= 5:
-            self.cur_state = ATTACK
-        pass
+        if self.type == 1:
+            FRAMES_PER_ACTION = 5
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+            if self.frame >= 5:
+                self.cur_state = ATTACK
+        else:
+            FRAMES_PER_ACTION = 4
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+            if self.frame >= 4:
+                self.cur_state = ATTACK
+
     @staticmethod
     def draw(self):
-        if self.dir == -1:
-            self.ground_monster_image.clip_draw(int(self.frame) * 175, 749, 175, 210, self.x - play_state.knight.x + 400,
+        if self.type == 1:
+            if self.dir == -1:
+                self.ground_monster_image.clip_draw(int(self.frame) * 175, 749, 175, 210, self.x - play_state.knight.x + 400,
+                                            self.y, 105, 105)
+            else:
+                self.ground_monster_image.clip_composite_draw(int(self.frame) * 175, 749, 175, 210,0,'h', self.x - play_state.knight.x + 400,
                                             self.y, 105, 105)
         else:
-            self.ground_monster_image.clip_composite_draw(int(self.frame) * 175, 749, 175, 210,0,'h', self.x - play_state.knight.x + 400,
-                                            self.y, 105, 105)
+            if self.dir == -1:
+                self.ground_monster_image2.clip_draw(int(self.frame) * 123, 661, 123, 157,
+                                                        self.x - play_state.knight.x + 400,
+                                                        self.y, 105, 105)
+            else:
+                self.ground_monster_image2.clip_composite_draw(int(self.frame) * 123, 661, 123, 157, 0, 'h',
+                                                                  self.x - play_state.knight.x + 400,
+                                                                  self.y, 105, 105)
 
 
 class ATTACK:
@@ -109,23 +155,38 @@ class ATTACK:
         pass
     @staticmethod
     def do(self):
-        FRAMES_PER_ACTION = 4
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
-        if int(self.frame) == 0:
-            self.cur_state = RUN
-            self.timer = 2000
-        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.5
+        if self.type == 1:
+            FRAMES_PER_ACTION = 4
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+            if int(self.frame) == 0:
+                self.cur_state = RUN
+                self.timer = 2000
+            self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.5
+        else:
+            FRAMES_PER_ACTION = 2
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+            if int(self.frame) == 2:
+                self.cur_state = RUN
+                self.timer = 2000
+            self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.5
         pass
 
     @staticmethod
     def draw(self):
-        if self.dir == -1:
-            self.ground_monster_image.clip_draw(int(self.frame) * 186, 615, 186, 150, self.x - play_state.knight.x + 400,
+        if self.type == 1:
+            if self.dir == -1:
+                self.ground_monster_image.clip_draw(int(self.frame) * 186, 615, 186, 150, self.x - play_state.knight.x + 400,
+                                            self.y, 120, 90)
+            else:
+                self.ground_monster_image.clip_composite_draw(int(self.frame) * 186, 615, 186, 150, 0,'h',self.x - play_state.knight.x + 400,
                                             self.y, 120, 90)
         else:
-            self.ground_monster_image.clip_composite_draw(int(self.frame) * 186, 615, 186, 150, 0,'h',self.x - play_state.knight.x + 400,
-                                            self.y, 120, 90)
-        pass
+            if self.dir == -1:
+                self.ground_monster_image2.clip_draw(int(self.frame) * 111, 517, 111, 143, self.x - play_state.knight.x + 400,
+                                            self.y, 110, 90)
+            else:
+                self.ground_monster_image2.clip_composite_draw(int(self.frame) * 111, 517, 111, 143, 0,'h',self.x - play_state.knight.x + 400,
+                                            self.y, 100, 80)
 
 class DIE:
     @staticmethod
@@ -139,19 +200,28 @@ class DIE:
 
     @staticmethod
     def do(self):
-        FRAMES_PER_ACTION = 5
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
-        pass
-
+        if self.type == 1:
+            FRAMES_PER_ACTION = 5
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+        else:
+            FRAMES_PER_ACTION = 4
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     @staticmethod
     def draw(self):
-        if self.dir == -1:
-            self.ground_monster_image.clip_draw(int(self.frame) * 199, 131, 199, 143, self.x - play_state.knight.x + 400,
+        if self.type == 1:
+            if self.dir == -1:
+                self.ground_monster_image.clip_draw(int(self.frame) * 199, 131, 199, 143, self.x - play_state.knight.x + 400,
+                                            self.y, 120, 90)
+            else:
+                self.ground_monster_image.clip_composite_draw(int(self.frame) * 199, 131, 199, 143, 0,'h',self.x - play_state.knight.x + 400,
                                             self.y, 120, 90)
         else:
-            self.ground_monster_image.clip_composite_draw(int(self.frame) * 199, 131, 199, 143, 0,'h',self.x - play_state.knight.x + 400,
+            if self.dir == -1:
+                self.ground_monster_image2.clip_draw(int(self.frame) * 168, 113, 168, 120, self.x - play_state.knight.x + 400,
                                             self.y, 120, 90)
-
+            else:
+                self.ground_monster_image2.clip_composite_draw(int(self.frame) * 168, 113, 168, 120, 0,'h',self.x - play_state.knight.x + 400,
+                                            self.y, 120, 90)
 
 class groundmonster:
     def __init__(self):
@@ -162,7 +232,9 @@ class groundmonster:
         self.dir = -1
         self.life = 3
         self.cur_state.enter(self)
+        self.type = 1
         self.ground_monster_image = load_image('ground_monster1.png')
+        self.ground_monster_image2 = load_image('ground_monster2.png')
 
     def update(self):
         if self.timer >= 0:
@@ -175,7 +247,6 @@ class groundmonster:
 
     def get_bb(self):
         return self.x - play_state.knight.x + 400 - 50, self.y - 50, self.x - play_state.knight.x + 400 + 50, self.y + 50
-
 
 class geo:
     def __init__(self):
@@ -195,3 +266,5 @@ class geo:
 
     def get_bb(self):
         return self.x - play_state.knight.x + 400 - 20, self.y - 20, self.x - play_state.knight.x + 400 + 20, self.y + 20
+
+
