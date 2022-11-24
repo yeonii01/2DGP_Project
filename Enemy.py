@@ -243,7 +243,7 @@ class groundmonster:
 
     def draw(self):
         self.cur_state.draw(self)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - play_state.knight.x + 400 - 50, self.y - 50, self.x - play_state.knight.x + 400 + 50, self.y + 50
@@ -261,7 +261,7 @@ class geo:
     def draw(self):
         if play_state.GroundMonster.cur_state == DIE:
             self.geo_image.clip_draw(0,0,58,61,self.x - play_state.knight.x + 400,self.y,40,40)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
 
     def get_bb(self):

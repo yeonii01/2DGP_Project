@@ -344,7 +344,7 @@ class knight:
         self.cur_state.draw(self)
         for i in range(self.life):
             self.hp_image.clip_draw(0, 0, 40, 50, 100 + 50*i, 550)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
     def add_event(self, event):
         self.event_que.insert(0, event)
 
