@@ -54,7 +54,6 @@ class IDLE:
         else:
             self.image_l.clip_draw(942 - int(self.frame) * 80, 304, 80, 80, 400, self.y)
 
-
 class LIFEUP:
     @staticmethod
     def enter(self,event):
@@ -62,6 +61,7 @@ class LIFEUP:
         self.frame = 0
         global FRAMES_PER_ACTION
         self.itemnum -= 5
+        self.lifecount = 0
         pass
 
     @staticmethod
@@ -72,15 +72,16 @@ class LIFEUP:
     @staticmethod
     def do(self):
         FRAMES_PER_ACTION = 6
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) + 6
-        if self.frame >= 12:
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)%6 + 6
+        self.lifecount += 1
+        if self.lifecount >= 500:
             self.life += 1
             self.cur_state = IDLE
-        print(self.frame)
+            self.lifecount = 0
     @staticmethod
     def draw(self):
         self.image_r.clip_draw(int(self.frame) * 80, 544, 80, 80, 400, self.y)
-        self.lifeup_image.clip_draw(0,0,91,83,400,self.y)
+        self.lifeup_image.clip_draw(0,0,91,83,400,self.y,100,100)
         pass
 
 class UP:
@@ -350,6 +351,7 @@ class knight:
         self.savey = 0
         self.itemnum = 0
         self.life = 5
+        self.lifecount = 0
 
         self.event_que = []
         self.cur_state = IDLE
