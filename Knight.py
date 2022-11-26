@@ -1,8 +1,8 @@
 from pico2d import *
 from Map import map
 import game_framework
-RD, LD, RU, LU, UD, DD, UU, DU, Z, X, C = range(11)
-event_name = ['RD','LD','RU','LU', 'UD', 'DD','UU','DU', 'Z','X','C']
+RD, LD, RU, LU, UD, DD, UU, DU, Z, X, C, A = range(12)
+event_name = ['RD','LD','RU','LU', 'UD', 'DD','UU','DU', 'Z','X','C', 'A']
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_LEFT): LD,
@@ -15,7 +15,9 @@ key_event_table = {
     (SDL_KEYUP, SDLK_DOWN): DU,
     (SDL_KEYDOWN,SDLK_c): C,
     (SDL_KEYDOWN, SDLK_z): Z,
-    (SDL_KEYDOWN, SDLK_x): X
+    (SDL_KEYDOWN, SDLK_x): X,
+    (SDL_KEYDOWN, SDLK_a): A
+
 }
 
 PIXEL_PER_METER = (10.0/ 0.3)
@@ -51,6 +53,36 @@ class IDLE:
             self.image_r.clip_draw(int(self.frame) * 80, 304, 80, 80, 400, self.y)
         else:
             self.image_l.clip_draw(942 - int(self.frame) * 80, 304, 80, 80, 400, self.y)
+
+
+class LIFEUP:
+    @staticmethod
+    def enter(self,event):
+        # self.dir = 0
+        self.frame = 0
+        global FRAMES_PER_ACTION
+        self.itemnum -= 5
+        pass
+
+    @staticmethod
+    def exit(self, event):
+        self.life += 1
+        pass
+
+    @staticmethod
+    def do(self):
+        FRAMES_PER_ACTION = 6
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) + 6
+        if self.frame >= 12:
+            self.life += 1
+            self.cur_state = IDLE
+        print(self.frame)
+    @staticmethod
+    def draw(self):
+        self.image_r.clip_draw(int(self.frame) * 80, 544, 80, 80, 400, self.y)
+        self.lifeup_image.clip_draw(0,0,91,83,400,self.y)
+        pass
+
 class UP:
     @staticmethod
     def enter(self,event):
@@ -168,6 +200,7 @@ class JUMP:
         self.pre_state = JUMP
     @staticmethod
     def exit(self, event):
+        self.dir = self.face_dir
         self.frame = 0
     @staticmethod
     def do(self):
@@ -179,6 +212,7 @@ class JUMP:
             self.jumpcount = 0
             self.y = self.savey
             self.cur_state = IDLE
+            self.dir = self.face_dir
             self.savey = 0
         if self.jumpcount <= 6:
             self.y += RUN_SPEED_PPS * game_framework.frame_time
@@ -202,6 +236,7 @@ class RUNJUMP:
     @staticmethod
     def exit(self, event):
         self.frame = 0
+        # self.dir = self.face_dir
         pass
     @staticmethod
     def do(self):
@@ -212,7 +247,7 @@ class RUNJUMP:
             self.jumpcount = 0
             self.y = self.savey
             self.cur_state = RUN
-            self.face_dir = self.dir
+            # self.dir = self.face_dir
         elif self.jumpcount <= 6:
             self.y += RUN_SPEED_PPS * game_framework.frame_time
         elif self.jumpcount <= 12 and self.jumpcount >= 6:
@@ -221,7 +256,7 @@ class RUNJUMP:
 
     @staticmethod
     def draw(self):
-        if self.dir == 1:
+        if self.face_dir == 1:
             self.image_r.clip_draw(int(self.frame) * 80, 223, 80, 80, 400, self.y)
         else:
             self.image_l.clip_draw(942 - int(self.frame) * 80, 223, 80, 80, 400, self.y)
@@ -294,15 +329,16 @@ class JUMPRUSH:
 
 
 next_state = {
-    IDLE:   {RU: IDLE,  LU: IDLE,  RD: RUN, LD: RUN, UD:UP, UU: UP,DU:DOWN, DD:DOWN, C:RUSH, Z:JUMP, X:ATTACK },
-    UP:     {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD:IDLE, UU: IDLE,DU:DOWN, DD:DOWN, C:RUSH, Z:JUMP, X:ATTACK },
-    DOWN:   {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD:UP, UU: UP, DU: IDLE, DD: IDLE, C: RUSH, Z: JUMP, X:ATTACK  },
-    RUSH:   {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD:UP, UU: UP,DU:DOWN, DD:DOWN, C:RUSH, Z:JUMP, X:ATTACK },
-    JUMP:   {RU: RUNJUMP,  LU: RUNJUMP,  RD: RUNJUMP, UD: RUNJUMP, UU: IDLE, DU: IDLE, DD:IDLE, C:JUMPRUSH, Z:IDLE, X:IDLE},
-    RUNJUMP: {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD: IDLE, UU: IDLE, DU:IDLE, DD:IDLE, C:JUMPRUSH, Z:IDLE, X:IDLE},
-    JUMPRUSH: {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, UD: UP, UU: UP, DU: DOWN, DD: DOWN, C: RUSH, Z: JUMP, X: ATTACK},
-    RUN:    {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE,UD: IDLE, UU: IDLE, DU: IDLE, DD: IDLE, X: ATTACK, Z: RUNJUMP, C: RUSH},
-    ATTACK: {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD:UP, UU: UP,DU:DOWN, DD:DOWN, C:RUSH, Z:JUMP,X:ATTACK }
+    IDLE:   {RU: IDLE,  LU: IDLE,  RD: RUN, LD: RUN, UD:UP, UU: UP,DU:DOWN, DD:DOWN, C:RUSH, Z:JUMP, X:ATTACK, A:LIFEUP },
+    UP:     {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD:IDLE, UU: IDLE,DU:DOWN, DD:DOWN, C:RUSH, Z:JUMP, X:ATTACK, A:LIFEUP },
+    DOWN:   {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD:UP, UU: UP, DU: IDLE, DD: IDLE, C: RUSH, Z: JUMP, X:ATTACK, A:LIFEUP  },
+    RUSH:   {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD:UP, UU: UP,DU:DOWN, DD:DOWN, C:RUSH, Z:JUMP, X:ATTACK, A:LIFEUP },
+    JUMP:   {RU: RUNJUMP,  LU: RUNJUMP,  RD: RUNJUMP, UD: RUNJUMP, UU: IDLE, DU: IDLE, DD:IDLE, C:JUMPRUSH, Z:IDLE, X:IDLE, A:LIFEUP},
+    RUNJUMP: {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD: IDLE, UU: IDLE, DU:IDLE, DD:IDLE, C:JUMPRUSH, Z:IDLE, X:IDLE, A:LIFEUP},
+    JUMPRUSH: {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, UD: UP, UU: UP, DU: DOWN, DD: DOWN, C: RUSH, Z: JUMP, X: ATTACK, A:LIFEUP},
+    RUN:    {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE,UD: IDLE, UU: IDLE, DU: IDLE, DD: IDLE, X: ATTACK, Z: RUNJUMP, C: RUSH, A:LIFEUP},
+    ATTACK: {RU: RUN,  LU: RUN,  RD: RUN, LD: RUN, UD:UP, UU: UP,DU:DOWN, DD:DOWN, C:RUSH, Z:JUMP,X:ATTACK, A:LIFEUP },
+    LIFEUP: {RU: IDLE,  LU: IDLE,  RD: RUN, LD: RUN, UD:UP, UU: UP,DU:DOWN, DD:DOWN, C:RUSH, Z:JUMP, X:ATTACK, A:IDLE }
 }
 class knight:
     def __init__(self):
@@ -325,6 +361,7 @@ class knight:
         self.dash_image_left = load_image('dash_left.png')
         self.dash_image_right = load_image('dash_right.png')
         self.hp_image = load_image('hp.png')
+        self.lifeup_image = load_image('lifeup_effect.png')
 
     def update(self):
         self.cur_state.do(self)
@@ -351,8 +388,17 @@ class knight:
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
-            if self.cur_state != JUMPRUSH:
-                self.add_event(key_event)
+            if self.cur_state == JUMPRUSH or self.cur_state == RUSH or self.cur_state == ATTACK:
+                pass
+            elif self.cur_state == JUMP or self.cur_state == RUNJUMP:
+                if event.key == RU or event.key == LU or event.key == LD or event.key == RD or event.key == SDLK_c:
+                    self.add_event(key_event)
+            else:
+                if key_event == A:
+                    if self.itemnum>=5:
+                        self.add_event(key_event)
+                else:
+                    self.add_event(key_event)
 
     def get_bb(self):
         return 370, self.y - 40, 430, self.y + 40
