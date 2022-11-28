@@ -1,6 +1,7 @@
 # from Knight import knight
 import play_state
 from pico2d import *
+
 class map:
     def __init__(self):
         self.x, self.y = 400, 300
@@ -17,6 +18,7 @@ class map:
         self.smallfont = load_font('Cafe24Danjunghae.TTF', 40)
         self.geo_image = load_image('geo_item.png')
         self.start_bench = load_image('spider_town_bench.png')
+
     def update(self):
         pass
 

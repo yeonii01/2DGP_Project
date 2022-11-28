@@ -9,6 +9,7 @@ import random
 from ground import Ground
 from ground import FGround
 from obstacle import Obstacle
+from Npc import NPC
 def handle_events():
     events = get_events()
     for event in events:
@@ -53,6 +54,12 @@ def handle_events():
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_ESCAPE:
                     Map.cur_state = 'pause'
+                elif npc.talk == True:
+                    if event.key == SDLK_SPACE:
+                        npc.dialogue += 1
+                        if npc.dialogue == 3:
+                            npc.talk = False
+                            npc.dialogue = 0
 
 
 # 초기화
@@ -61,7 +68,7 @@ geonum2 = random.randint(2,5)
 tempx,otempx = 0,0
 
 def enter():
-    global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx
+    global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
@@ -73,6 +80,7 @@ def enter():
     knight = Knight.knight()
     GroundMonster = Enemy.groundmonster()
     GroundMonster2 = Enemy.groundmonster()
+    npc = NPC()
     GroundMonster2.type = 2
     GroundMonster2.x = 3000
     Geos = [geo() for i in range(geonum)]
@@ -81,6 +89,7 @@ def enter():
     game_world.add_object(GroundMonster2, 1)
     game_world.add_object(knight, 1)
     game_world.add_object(Map, 0)
+    game_world.add_object(npc, 0)
 
     # 블록 그리기
     for i in blocks1:
@@ -176,7 +185,6 @@ def update():
             if math.fabs(GroundMonster.x - knight.x) <= 120:
                 if knight.cur_state == Knight.ATTACK:
                     GroundMonster.life -= 1
-                    print(GroundMonster.life)
                     GroundMonster.x -= GroundMonster.dir * 75
                     timer1 = 500
 
@@ -203,7 +211,6 @@ def update():
             if math.fabs(GroundMonster2.x - knight.x) <= 120:
                 if knight.cur_state == Knight.ATTACK:
                     GroundMonster2.life -= 1
-                    print(GroundMonster2.life)
                     GroundMonster2.x -= GroundMonster2.dir * 75
                     timer1 = 500
 

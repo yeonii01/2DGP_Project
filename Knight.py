@@ -208,7 +208,6 @@ class JUMP:
         FRAMES_PER_ACTION = 12
         self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
         self.jumpcount = int(self.frame)
-        print(self.jumpcount)
         if self.frame >= 12:
             self.jumpcount = 0
             self.y = self.savey
@@ -390,7 +389,7 @@ class knight:
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
-            if self.cur_state == JUMPRUSH or self.cur_state == RUSH or self.cur_state == ATTACK:
+            if self.cur_state == JUMPRUSH or self.cur_state == RUSH or self.cur_state == ATTACK or self.cur_state == LIFEUP:
                 pass
             elif self.cur_state == JUMP or self.cur_state == RUNJUMP:
                 if event.key == RU or event.key == LU or event.key == LD or event.key == RD or event.key == SDLK_c:
