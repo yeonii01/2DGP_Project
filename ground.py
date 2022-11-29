@@ -52,7 +52,7 @@ class Elevator:
         self.image = load_image('elev.png')
         self.sFloor = False
         self.x, self.y, self.plusy = 4200, 70, 0
-        self.savey = 0
+        self.savey,dir = 0, 1
     def update(self):
         pass
 

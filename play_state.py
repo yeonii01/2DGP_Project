@@ -12,6 +12,7 @@ from ground import SecondGround
 from obstacle import Obstacle
 from Npc import NPC
 from ground import Elevator
+
 def handle_events():
     events = get_events()
     for event in events:
@@ -71,7 +72,7 @@ tempx,otempx = 0,0
 
 def enter():
     global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc, elev
-    global secblocks1
+    global secblocks1, twelev
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
@@ -86,6 +87,7 @@ def enter():
     GroundMonster2 = Enemy.groundmonster()
     npc = NPC()
     elev = Elevator()
+    twelev = Elevator()
     GroundMonster2.type = 2
     GroundMonster2.x = 3000
     Geos = [geo() for i in range(geonum)]
@@ -96,6 +98,7 @@ def enter():
     game_world.add_object(Map, 0)
     game_world.add_object(npc, 0)
     game_world.add_object(elev, 1)
+    game_world.add_object(twelev, 1)
     # 블록 그리기
     for i in blocks1:
         game_world.add_object(i, 0)
@@ -135,6 +138,7 @@ def enter():
         tempx += 1
 
     knight.x = 3500 #확인용
+    twelev.x = 5300
 
 # 종료
 def exit():
@@ -283,6 +287,15 @@ def update():
                     i.x = 180 + 150 * tempx
                     tempx += 1
         knight.y = elev.y + elev.plusy + 50
+
+    # 두개의 길 선택 승강기
+    if twelev.plusy >= 200:
+        twelev.dir = -1
+    elif twelev.plusy <=0:
+        twelev.dir = 1
+    twelev.plusy += 0.25* twelev.dir
+    if collide(twelev, knight):
+        knight.y = twelev.y + twelev.plusy + 50
 
 def draw_world():
     for game_object in game_world.all_objects():
