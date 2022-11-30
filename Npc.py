@@ -21,10 +21,10 @@ class NPC:
         if self.talk == True:
             if self.dialogue == 1:
                 self.font.draw(self.x- play_state.knight.x + 400, self. y + 75, f'FIND THE KEY',(255,255,255))
+                self.talkeffect.clip_draw(0, 0, 91, 83, self.x - play_state.knight.x + 450, self.y + 85, 500, 100)
             elif self.dialogue == 2:
                 self.font.draw(self.x- play_state.knight.x + 400, self. y + 75, f'THE HINT IS BELL',(255,255,255))
-            self.talkeffect.clip_draw(0,0,91,83,self.x- play_state.knight.x + 450, self. y + 85,500,100)
-        # draw_rectangle(*self.get_bb())
+                self.talkeffect.clip_draw(0,0,91,83,self.x- play_state.knight.x + 450, self. y + 85,500,100)
 
     def get_bb(self):
         pass

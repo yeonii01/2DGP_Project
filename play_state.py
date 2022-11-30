@@ -73,7 +73,7 @@ def enter():
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
     blocks4 = [FGround() for i in range(3)]
-    blocks5 = [Ground() for i in range(12)]
+    blocks5 = [Ground() for i in range(11)]
     obstacles = [Obstacle()for i in range(3)]
     obstacle = Obstacle()
     Map = map()
@@ -206,7 +206,6 @@ def update():
     if GroundMonster2.cur_state != Enemy.DIE:
         if timer1 >= 0:
             timer1 -= 1
-
         else:
             if math.fabs(GroundMonster2.x - knight.x) <= 120:
                 if knight.cur_state == Knight.ATTACK:
@@ -218,7 +217,6 @@ def update():
             if timer2 >= 1900:
                 knight.x = knight.x + GroundMonster2.dir * 1
             timer2 -= 1
-
         else:
             if collide(knight, GroundMonster2):
                 if knight.cur_state != Knight.ATTACK:
