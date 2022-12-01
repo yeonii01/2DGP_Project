@@ -10,6 +10,7 @@ from ground import Ground
 from ground import FGround
 from obstacle import Obstacle
 from Npc import NPC
+from ground import Elevator
 def handle_events():
     events = get_events()
     for event in events:
@@ -68,7 +69,7 @@ geonum2 = random.randint(2,5)
 tempx,otempx = 0,0
 
 def enter():
-    global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc
+    global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc, elev
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
@@ -81,6 +82,7 @@ def enter():
     GroundMonster = Enemy.groundmonster()
     GroundMonster2 = Enemy.groundmonster()
     npc = NPC()
+    elev = Elevator()
     GroundMonster2.type = 2
     GroundMonster2.x = 3000
     Geos = [geo() for i in range(geonum)]
@@ -90,7 +92,7 @@ def enter():
     game_world.add_object(knight, 1)
     game_world.add_object(Map, 0)
     game_world.add_object(npc, 0)
-
+    game_world.add_object(elev, 1)
     # 블록 그리기
     for i in blocks1:
         game_world.add_object(i, 0)
@@ -124,11 +126,12 @@ def enter():
         o.x = 1820 + 150 * otempx
         otempx += 1
 
-
     for i in blocks5:
         game_world.add_object(i, 0)
         i.x = 20 + 150 * tempx
         tempx += 1
+
+    knight.x = 3500 #확인용
 # 종료
 def exit():
     game_world.clear()
@@ -255,6 +258,18 @@ def update():
                 knight.itemnum += 1
                 Geos2.remove(Geo)
                 game_world.remove_object(Geo)
+
+    #승강기 사용
+    if collide(elev, knight):
+        if elev.sFloor == False:
+            if elev.plusy <= 600:
+                elev.plusy += 0.25
+                elev.savey = elev.plusy
+            else:
+                if elev.sFloor == False:
+                    elev.sFloor = True
+                    elev.plusy = 0
+        knight.y = elev.y + elev.plusy + 50
 
 def draw_world():
     for game_object in game_world.all_objects():

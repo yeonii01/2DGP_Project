@@ -1,6 +1,8 @@
 from pico2d import *
 from Map import map
 import game_framework
+import play_state
+
 RD, LD, RU, LU, UD, DD, UU, DU, Z, X, C, A = range(12)
 event_name = ['RD','LD','RU','LU', 'UD', 'DD','UU','DU', 'Z','X','C', 'A']
 
