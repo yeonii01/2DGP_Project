@@ -8,6 +8,7 @@ import game_world
 import random
 from ground import Ground
 from ground import FGround
+from ground import SecondGround
 from obstacle import Obstacle
 from Npc import NPC
 from ground import Elevator
@@ -70,11 +71,13 @@ tempx,otempx = 0,0
 
 def enter():
     global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc, elev
+    global secblocks1
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
     blocks4 = [FGround() for i in range(3)]
     blocks5 = [Ground() for i in range(11)]
+    secblocks1 = [SecondGround() for i in range(6)]
     obstacles = [Obstacle()for i in range(3)]
     obstacle = Obstacle()
     Map = map()
@@ -132,6 +135,7 @@ def enter():
         tempx += 1
 
     knight.x = 3500 #확인용
+
 # 종료
 def exit():
     game_world.clear()
@@ -141,7 +145,7 @@ timer2 = 0
 
 check = False
 def update():
-    global timer1, timer2, check
+    global timer1, timer2, check, tempx
 
     check = False
 
@@ -171,6 +175,11 @@ def update():
             check = True
 
     for i in blocks5:
+        if collide(knight, i):
+            knight.y = i.y + 50
+            check = True
+
+    for i in secblocks1:
         if collide(knight, i):
             knight.y = i.y + 50
             check = True
@@ -269,6 +278,10 @@ def update():
                 if elev.sFloor == False:
                     elev.sFloor = True
                     elev.plusy = 0
+                for i in secblocks1:
+                    game_world.add_object(i, 0)
+                    i.x = 180 + 150 * tempx
+                    tempx += 1
         knight.y = elev.y + elev.plusy + 50
 
 def draw_world():
