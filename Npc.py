@@ -34,18 +34,17 @@ class NPC2:
     def __init__(self):
         self.x, self.y = 7100, 130
         self.talk = False
-        self.talk2 = False
         self.dialogue = 0
         self.npc_image = load_image('Npc2.png')
         self.font = load_font('Cafe24Danjunghae.TTF', 20)
         self.talkeffect = load_image('lifeup_effect.png')
 
     def update(self):
-        if math.fabs(self.x - play_state.knight.x) <= 200:
+        if math.fabs(self.x - play_state.knight.x) <= 400:
             self.talk = True
         if self.dialogue >= 1:
-            play_state.key.onoff = False
-            pass
+            if play_state.key.keyget == True:
+                play_state.key.onoff = False
 
     def draw(self):
         self.npc_image.clip_draw(0, 0, 477, 417, self.x - play_state.knight.x + 400, self.y, 95, 110)
@@ -53,11 +52,11 @@ class NPC2:
             if self.dialogue == 1:
                 self.font.draw(self.x - play_state.knight.x + 400, self.y + 75, f'GIVE ME THE KEY', (255, 255, 255))
                 self.talkeffect.clip_draw(0, 0, 91, 83, self.x - play_state.knight.x + 450, self.y + 85, 500, 100)
-
-            elif self.dialogue == 2:
-                self.font.draw(self.x - play_state.knight.x + 400, self.y + 75, f'TAKE CARE',
+            if play_state.key.keyget == True:
+                if self.dialogue == 2:
+                    self.font.draw(self.x - play_state.knight.x + 400, self.y + 75, f'TAKE CARE',
                                    (255, 255, 255))
-                self.talkeffect.clip_draw(0, 0, 91, 83, self.x - play_state.knight.x + 450, self.y + 85, 500, 100)
+                    self.talkeffect.clip_draw(0, 0, 91, 83, self.x - play_state.knight.x + 450, self.y + 85, 500, 100)
 
     def get_bb(self):
         pass

@@ -37,8 +37,6 @@ class IDLE:
             if math.fabs(self.x - play_state.knight.x) <= 400:
                 self.cur_state = RUN
 
-
-
     @staticmethod
     def draw(self):
         if self.type == 1:

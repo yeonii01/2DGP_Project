@@ -67,7 +67,11 @@ def handle_events():
                 elif npc2.talk == True:
                     if event.key == SDLK_SPACE:
                         npc2.dialogue += 1
-                        if npc2.dialogue == 3:
+                        if npc2.dialogue == 2:
+                            if key.keyget == False:
+                                npc2.talk = False
+                                npc2.dialogue = 0
+                        elif npc2.dialogue == 3:
                             npc2.talk = False
                             npc2.dialogue = 0
 
@@ -79,7 +83,7 @@ tempx,otempx = 0,0
 
 def enter():
     global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc, elev
-    global secblocks1, secblocks2, twelev, twelev2, twblockdown, twblockup, key, npc2
+    global secblocks1, secblocks2, secblocks3, twelev, twelev2, twblockdown, twblockup, key, npc2, bosselev
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
@@ -89,6 +93,7 @@ def enter():
     twblockdown = [SecondGround() for i in range(6)]
     twblockup = [SecondGround() for i in range(6)]
     secblocks2 = [SecondGround() for i in range(6)]
+    secblocks3 = [SecondGround() for i in range(8)]
     obstacles = [Obstacle()for i in range(3)]
     obstacle = Obstacle()
     Map = map()
@@ -100,6 +105,7 @@ def enter():
     elev = Elevator()
     twelev = Elevator()
     twelev2 = Elevator()
+    bosselev = Elevator()
     key = KEY()
     GroundMonster2.type = 2
     GroundMonster2.x = 3000
@@ -115,6 +121,7 @@ def enter():
     game_world.add_object(twelev2, 1)
     game_world.add_object(key, 1)
     game_world.add_object(npc2, 0)
+    game_world.add_object(bosselev, 1)
 
     # 블록 그리기
     for i in blocks1:
@@ -178,6 +185,14 @@ def enter():
         i.x = 5680 + 150 * twcount
         twcount += 1
 
+    bosselev.x = 7510
+    bosselev.savex = 7510
+    twcount = 0
+    for i in secblocks3:
+        game_world.add_object(i, 0)
+        i.x = 8110 + 150 * twcount
+        twcount += 1
+
 # 종료
 def exit():
     game_world.clear()
@@ -237,6 +252,11 @@ def update():
             check = True
 
     for i in secblocks2:
+        if collide(knight, i):
+            knight.y = i.y + 50
+            check = True
+
+    for i in secblocks3:
         if collide(knight, i):
             knight.y = i.y + 50
             check = True
@@ -361,6 +381,20 @@ def update():
     if key.keyget == False:
         if collide(key, knight):
             key.keyget = True
+    if key.onoff == True:
+        if knight.x >=7100:
+            knight.x = 7100
+    # 수정중
+    if collide(bosselev, knight):
+        if bosselev.sFloor == False:
+            if math.fabs(bosselev.savex - bosselev.x) <= 400:
+                bosselev.x += 0.5
+                knight.x += 0.5
+                print(bosselev.savex - bosselev.x)
+            else:
+                bosselev.sFloor = True
+        knight.y = bosselev.y + 50
+
 
 def draw_world():
     for game_object in game_world.all_objects():
