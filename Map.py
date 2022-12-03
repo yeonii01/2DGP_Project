@@ -12,14 +12,14 @@ class map:
         self.start_titleimage = load_image('start_title.png')
         self.start_font = load_image('start_font.png')
         self.start_cursor = load_image('cursor.png')
-        self.state = ['start', 'map1', 'die', 'pause']
+        self.state = ['start', 'map1', 'die', 'pause', 'finish']
         self.cur_state = 'start'
         self.font = load_font('Cafe24Danjunghae.TTF', 70)
         self.smallfont = load_font('Cafe24Danjunghae.TTF', 40)
         self.geo_image = load_image('geo_item.png')
         self.start_bench = load_image('spider_town_bench.png')
         self.bell = load_image('chain_bell.png')
-
+        self.success = load_image('Finishimage.png')
     def update(self):
         pass
 
@@ -53,3 +53,7 @@ class map:
             self.smallfont.draw(360, 200, f'QUIT', (255, 255, 255))
             # draw_rectangle(360,180,450,220)
             self.start_cursor.clip_draw(0,0,37,37,self.cursor_x,self.cursor_y)
+        elif self.cur_state == 'finish':
+            self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
+            self.success.clip_draw(0,0,578,1016,400,250,284,500)
+            self.smallfont.draw(300, 550, f'GAME FINISH', (255, 255, 255))

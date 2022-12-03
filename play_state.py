@@ -58,13 +58,13 @@ def handle_events():
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_ESCAPE:
                     Map.cur_state = 'pause'
-                elif npc.talk == True:
+                if npc.talk == True:
                     if event.key == SDLK_SPACE:
                         npc.dialogue += 1
                         if npc.dialogue == 3:
                             npc.talk = False
                             npc.dialogue = 0
-                elif npc2.talk == True:
+                if npc2.talk == True:
                     if event.key == SDLK_SPACE:
                         npc2.dialogue += 1
                         if npc2.dialogue == 2:
@@ -79,11 +79,12 @@ def handle_events():
 # 초기화
 geonum = random.randint(2,5)
 geonum2 = random.randint(2,5)
+geonum3 = random.randint(2,5)
 tempx,otempx = 0,0
 
 def enter():
-    global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc, elev
-    global secblocks1, secblocks2, secblocks3, twelev, twelev2, twblockdown, twblockup, key, npc2, bosselev
+    global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, Geos3, geonum, geonum2, geonum3, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc, elev
+    global secblocks1, secblocks2, secblocks3, twelev, twelev2, twblockdown, twblockup, key, npc2, bosselev, GroundMonster3
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
@@ -100,6 +101,7 @@ def enter():
     knight = Knight.knight()
     GroundMonster = Enemy.groundmonster()
     GroundMonster2 = Enemy.groundmonster()
+    GroundMonster3 = Enemy.groundmonster()
     npc = NPC()
     npc2 = NPC2()
     elev = Elevator()
@@ -109,10 +111,13 @@ def enter():
     key = KEY()
     GroundMonster2.type = 2
     GroundMonster2.x = 3000
+    GroundMonster3.x = 5000
     Geos = [geo() for i in range(geonum)]
     Geos2 = [geo() for i in range(geonum2)]
+    Geos3 = [geo() for i in range(geonum3)]
     game_world.add_object(GroundMonster, 1)
     game_world.add_object(GroundMonster2, 1)
+    game_world.add_object(GroundMonster3, 1)
     game_world.add_object(knight, 1)
     game_world.add_object(Map, 0)
     game_world.add_object(npc, 0)
@@ -161,7 +166,7 @@ def enter():
         i.x = 20 + 150 * tempx
         tempx += 1
 
-    knight.x = 3500 #확인용
+    # knight.x = 3500 #확인용
     twelev.x = 5300
     # twblockup.y += 200
 
@@ -313,6 +318,29 @@ def update():
                         knight.life -= 1
                         timer2 = 2000
 
+    if GroundMonster3.cur_state != Enemy.DIE:
+        if timer1 >= 0:
+            timer1 -= 1
+
+        else:
+            if math.fabs(GroundMonster3.x - knight.x) <= 120:
+                if knight.cur_state == Knight.ATTACK:
+                    GroundMonster3.life -= 1
+                    GroundMonster3.x -= GroundMonster3.dir * 75
+                    timer1 = 500
+
+        if timer2 >= 0:
+            if timer2 >= 1900:
+                knight.x = knight.x + GroundMonster3.dir * 1
+            timer2 -= 1
+
+        else:
+            if collide(knight, GroundMonster3):
+                if knight.cur_state != Knight.ATTACK:
+                    if knight. life > 0:
+                        knight.life -= 1
+                        timer2 = 2000
+
     if GroundMonster.life == 0:
         GroundMonster.cur_state = Enemy.DIE
         # 아이템 소환
@@ -331,6 +359,14 @@ def update():
                                         int(GroundMonster2.x + 50)), GroundMonster2.y - 20
         GroundMonster2.life = -1
 
+    if GroundMonster3.life == 0:
+        GroundMonster3.cur_state = Enemy.DIE
+        # 아이템 소환
+        for Geo in Geos3:
+            game_world.add_object(Geo, 1)
+            Geo.x, Geo.y = random.randint(int(GroundMonster3.x - 50),
+                                          int(GroundMonster3.x + 50)), GroundMonster3.y - 20
+        GroundMonster3.life = -1
     # 아이템 획득
     if GroundMonster.life <= 0:
         for Geo in Geos.copy():
@@ -343,6 +379,13 @@ def update():
             if collide(knight, Geo):
                 knight.itemnum += 1
                 Geos2.remove(Geo)
+                game_world.remove_object(Geo)
+
+    if GroundMonster3.life <= 0:
+        for Geo in Geos3.copy():
+            if collide(knight, Geo):
+                knight.itemnum += 1
+                Geos3.remove(Geo)
                 game_world.remove_object(Geo)
 
     #승강기 사용
@@ -390,7 +433,6 @@ def update():
             if math.fabs(bosselev.savex - bosselev.x) <= 400:
                 bosselev.x += 0.5
                 knight.x += 0.5
-                print(bosselev.savex - bosselev.x)
             else:
                 bosselev.sFloor = True
         knight.y = bosselev.y + 50
