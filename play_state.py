@@ -72,13 +72,16 @@ tempx,otempx = 0,0
 
 def enter():
     global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc, elev
-    global secblocks1, twelev
+    global secblocks1, secblocks2, twelev, twelev2, twblockdown, twblockup
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
     blocks4 = [FGround() for i in range(3)]
     blocks5 = [Ground() for i in range(11)]
     secblocks1 = [SecondGround() for i in range(6)]
+    twblockdown = [SecondGround() for i in range(6)]
+    twblockup = [SecondGround() for i in range(6)]
+    secblocks2 = [SecondGround() for i in range(6)]
     obstacles = [Obstacle()for i in range(3)]
     obstacle = Obstacle()
     Map = map()
@@ -88,6 +91,7 @@ def enter():
     npc = NPC()
     elev = Elevator()
     twelev = Elevator()
+    twelev2 = Elevator()
     GroundMonster2.type = 2
     GroundMonster2.x = 3000
     Geos = [geo() for i in range(geonum)]
@@ -99,6 +103,7 @@ def enter():
     game_world.add_object(npc, 0)
     game_world.add_object(elev, 1)
     game_world.add_object(twelev, 1)
+    game_world.add_object(twelev2, 1)
     # 블록 그리기
     for i in blocks1:
         game_world.add_object(i, 0)
@@ -139,6 +144,22 @@ def enter():
 
     knight.x = 3500 #확인용
     twelev.x = 5300
+    # twblockup.y += 200
+
+    twcount = 0
+    for i in twblockup:
+        game_world.add_object(i, 0)
+        i.x = 5480 + 150 * twcount
+        i.y += 300
+        twcount += 1
+
+    twcount = 0
+    for i in twblockdown:
+        game_world.add_object(i, 0)
+        i.x = 5480 + 150 * twcount
+        twcount += 1
+
+    twelev2.x = 6400
 
 # 종료
 def exit():
@@ -184,6 +205,16 @@ def update():
             check = True
 
     for i in secblocks1:
+        if collide(knight, i):
+            knight.y = i.y + 50
+            check = True
+
+    for i in twblockup:
+        if collide(knight, i):
+            knight.y = i.y + 50
+            check = True
+
+    for i in twblockdown:
         if collide(knight, i):
             knight.y = i.y + 50
             check = True
@@ -289,13 +320,21 @@ def update():
         knight.y = elev.y + elev.plusy + 50
 
     # 두개의 길 선택 승강기
-    if twelev.plusy >= 200:
+    if twelev.plusy >= 300:
         twelev.dir = -1
     elif twelev.plusy <=0:
         twelev.dir = 1
     twelev.plusy += 0.25* twelev.dir
     if collide(twelev, knight):
         knight.y = twelev.y + twelev.plusy + 50
+
+    if twelev2.plusy >= 300:
+        twelev2.dir = -1
+    elif twelev2.plusy <= 0:
+        twelev2.dir = 1
+    twelev2.plusy += 0.25* twelev2.dir
+    if collide(twelev2, knight):
+        knight.y = twelev2.y + twelev2.plusy + 50
 
 def draw_world():
     for game_object in game_world.all_objects():
@@ -317,7 +356,6 @@ def collide(a, b):
     if right_a < left_b: return False
     if top_a < bottom_b: return False
     if bottom_a > top_b: return False
-
     return True
 
 def pause():

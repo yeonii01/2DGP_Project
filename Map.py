@@ -18,6 +18,7 @@ class map:
         self.smallfont = load_font('Cafe24Danjunghae.TTF', 40)
         self.geo_image = load_image('geo_item.png')
         self.start_bench = load_image('spider_town_bench.png')
+        self.bell = load_image('chain_bell.png')
 
     def update(self):
         pass
@@ -34,6 +35,7 @@ class map:
             self.map_ui.clip_draw(0,0,100,60,60,560)
             self.geo_image.clip_draw(0, 0, 58, 61, 40, 500, 40, 40)
             self.smallfont.draw(80, 495, f'{play_state.knight.itemnum}',(255,255,255))
+            self.bell.clip_draw(0,0,52,469, 5450 - play_state.knight.x + 400, 550, 30,220)
         elif self.cur_state == 'die':
             self.map1_image.clip_draw(0, 0, 800, 600, self.x, self.y)
             self.font.draw(280, 400, f'YOU DIE',(255,255,255))
