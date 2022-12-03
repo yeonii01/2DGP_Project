@@ -12,7 +12,7 @@ from ground import SecondGround
 from obstacle import Obstacle
 from Npc import NPC
 from ground import Elevator
-
+from boss import KEY
 def handle_events():
     events = get_events()
     for event in events:
@@ -72,7 +72,7 @@ tempx,otempx = 0,0
 
 def enter():
     global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, geonum, geonum2, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc, elev
-    global secblocks1, secblocks2, twelev, twelev2, twblockdown, twblockup
+    global secblocks1, secblocks2, twelev, twelev2, twblockdown, twblockup, key
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
@@ -92,6 +92,7 @@ def enter():
     elev = Elevator()
     twelev = Elevator()
     twelev2 = Elevator()
+    key = KEY()
     GroundMonster2.type = 2
     GroundMonster2.x = 3000
     Geos = [geo() for i in range(geonum)]
@@ -104,6 +105,7 @@ def enter():
     game_world.add_object(elev, 1)
     game_world.add_object(twelev, 1)
     game_world.add_object(twelev2, 1)
+    game_world.add_object(key, 1)
     # 블록 그리기
     for i in blocks1:
         game_world.add_object(i, 0)
@@ -335,6 +337,16 @@ def update():
     twelev2.plusy += 0.25* twelev2.dir
     if collide(twelev2, knight):
         knight.y = twelev2.y + twelev2.plusy + 50
+
+    if key.keyget == False:
+        if key.keycount % 2 == 0:
+            key.y += 5
+        else:
+            key.y -= 5
+        key.keycount += 1
+        if collide(key, knight):
+            key.keyget = True
+
 
 def draw_world():
     for game_object in game_world.all_objects():
