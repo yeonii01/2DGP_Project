@@ -257,8 +257,8 @@ class geo:
         pass
 
     def draw(self):
-        if play_state.GroundMonster.cur_state == DIE:
-            self.geo_image.clip_draw(0,0,58,61,self.x - play_state.knight.x + 400,self.y,40,40)
+        # if play_state.GroundMonster.cur_state == DIE:
+        self.geo_image.clip_draw(0,0,58,61,self.x - play_state.knight.x + 400,self.y,40,40)
         # draw_rectangle(*self.get_bb())
 
 

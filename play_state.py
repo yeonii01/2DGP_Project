@@ -14,6 +14,7 @@ from Npc import NPC
 from Npc import NPC2
 from ground import Elevator
 from boss import KEY
+from boss import BOSS
 def handle_events():
     events = get_events()
     for event in events:
@@ -84,7 +85,7 @@ tempx,otempx = 0,0
 
 def enter():
     global knight, Map, GroundMonster, GroundMonster2, Geos, Geos2, Geos3, geonum, geonum2, geonum3, blocks1, blocks2, blocks3, blocks4, blocks5, tempx, obstacle, obstacles, otempx, npc, elev
-    global secblocks1, secblocks2, secblocks3, twelev, twelev2, twblockdown, twblockup, key, npc2, bosselev, GroundMonster3
+    global secblocks1, secblocks2, secblocks3, twelev, twelev2, twblockdown, twblockup, key, npc2, bosselev, GroundMonster3,boss
     blocks1 = [Ground() for i in range(6)]
     blocks2 = [Ground() for i in range(6)]
     blocks3 = Ground()
@@ -102,6 +103,7 @@ def enter():
     GroundMonster = Enemy.groundmonster()
     GroundMonster2 = Enemy.groundmonster()
     GroundMonster3 = Enemy.groundmonster()
+    boss = BOSS()
     npc = NPC()
     npc2 = NPC2()
     elev = Elevator()
@@ -118,6 +120,7 @@ def enter():
     game_world.add_object(GroundMonster, 1)
     game_world.add_object(GroundMonster2, 1)
     game_world.add_object(GroundMonster3, 1)
+    game_world.add_object(boss, 1)
     game_world.add_object(knight, 1)
     game_world.add_object(Map, 0)
     game_world.add_object(npc, 0)
@@ -166,7 +169,7 @@ def enter():
         i.x = 20 + 150 * tempx
         tempx += 1
 
-    # knight.x = 3500 #확인용
+    knight.x = 3500 #확인용
     twelev.x = 5300
     # twblockup.y += 200
 
@@ -374,6 +377,7 @@ def update():
                 knight.itemnum += 1
                 Geos.remove(Geo)
                 game_world.remove_object(Geo)
+
     if GroundMonster2.life <= 0:
         for Geo in Geos2.copy():
             if collide(knight, Geo):

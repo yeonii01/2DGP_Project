@@ -1,6 +1,7 @@
 import play_state
+import game_framework
 from pico2d import *
-
+import math
 PIXEL_PER_METER = (10.0/ 0.3)
 RUN_SPEED_KMPH = 20.0
 RUN_SPEED_MPM = (RUN_SPEED_KMPH*1000.0/60.0)
@@ -8,12 +9,13 @@ RUN_SPEED_MPS = (RUN_SPEED_MPM/60.0)
 RUN_SPEED_PPS = (RUN_SPEED_KMPH*PIXEL_PER_METER)
 
 TIME_PER_ACTION = 0.5
-ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+ACTION_PER_TIME = 0.5 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 10
 
-class IDLE:
+class WAKE:
     @staticmethod
     def enter(self):
+        global FRAMES_PER_ACTION
         pass
 
     @staticmethod
@@ -22,11 +24,40 @@ class IDLE:
 
     @staticmethod
     def do(self):
+        FRAMES_PER_ACTION = 5
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+        if math.fabs(self.x - play_state.knight.x) <= 300:
+                self.cur_state = WALK
+    @staticmethod
+    def draw(self):
+        self.bossimage.clip_composite_draw(int(self.frame) * 430, 6916, 434, 347,0,'h', self.x - play_state.knight.x + 400,
+                                            self.y, 144, 115)
+
+class WALK:
+    @staticmethod
+    def enter(self):
+        global FRAMES_PER_ACTION
         pass
 
     @staticmethod
-    def draw(self):
+    def exit(self):
         pass
+
+    @staticmethod
+    def do(self):
+        FRAMES_PER_ACTION = 10
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 10
+        if math.fabs(self.x - play_state.knight.x) <= 200:
+                self.cur_state = RUN
+
+    @staticmethod
+    def draw(self):
+        if self.frame < 6:
+            self.bossimage.clip_composite_draw(int(self.frame) * 442, 5868, 496, 354,0,'h', self.x - play_state.knight.x + 400,
+                                            self.y, 144, 115)
+        else:
+            self.bossimage.clip_composite_draw((int(self.frame) - 6) * 442, 5513, 496, 354,0,'h', self.x - play_state.knight.x + 400,
+                                            self.y, 144, 115)
 class RUN:
     @staticmethod
     def enter(self):
@@ -44,22 +75,6 @@ class RUN:
     def draw(self):
         pass
 
-class READYATTACK:
-    @staticmethod
-    def enter(self):
-        pass
-
-    @staticmethod
-    def exit(self):
-        pass
-
-    @staticmethod
-    def do(self):
-        pass
-
-    @staticmethod
-    def draw(self):
-        pass
 class ATTACK:
     @staticmethod
     def enter(self):
@@ -96,10 +111,10 @@ class DIE:
 
 class BOSS:
     def __init__(self):
-        self.x, self.y = 1700, 120
+        self.x, self.y = 8600, 130
         self.frame = 0
         self.timer = 0
-        self.cur_state = IDLE
+        self.cur_state = WAKE
         self.dir = -1
         self.life = 7
         self.cur_state.enter(self)
