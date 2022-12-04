@@ -250,8 +250,8 @@ class geo:
     def __init__(self):
         # self.geonum = random.randint(2, 5)
         self.geo_image = load_image('geo_item.png')
-        self.x, self.y = 0,0
-        self.x, self.y = random.randint(int(play_state.GroundMonster.x - 50), int(play_state.GroundMonster.x + 50)), play_state.GroundMonster.y-20
+        self.x, self.y = -50,-50
+        # self.x, self.y = random.randint(int(play_state.GroundMonster.x - 50), int(play_state.GroundMonster.x + 50)), play_state.GroundMonster.y-20
 
     def update(self):
         pass

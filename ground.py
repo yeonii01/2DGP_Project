@@ -41,7 +41,8 @@ class SecondGround:
         pass
 
     def draw(self):
-        self.floor_image.clip_draw(0, 0, 150, 25, self.x - play_state.knight.x + 400, self.y)
+        if play_state.elev.sFloor == True:
+            self.floor_image.clip_draw(0, 0, 150, 25, self.x - play_state.knight.x + 400, self.y)
         # draw_rectangle(*self.get_bb())
 
     def get_bb(self):

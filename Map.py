@@ -20,10 +20,14 @@ class map:
         self.start_bench = load_image('spider_town_bench.png')
         self.bell = load_image('chain_bell.png')
         self.success = load_image('Finishimage.png')
+        self.bgm = load_music('hollowknight.mp3')
+        self.bgm.set_volume(85)
+        self.bgm.repeat_play()
     def update(self):
         pass
 
     def draw(self):
+
         if self.cur_state == 'start':
             self.start_image.clip_draw(0, 0, 800, 600, self.x, self.y)
             self.start_titleimage.clip_draw(0, 0, 600, 250, 400, 400)

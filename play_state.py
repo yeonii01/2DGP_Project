@@ -16,6 +16,10 @@ from Npc import NPC2
 from ground import Elevator
 from Boss import KEY
 from Boss import BOSS
+
+geonum = random.randint(2,5)
+geonum2 = random.randint(2,5)
+geonum3 = random.randint(2,5)
 def handle_events():
     events = get_events()
     for event in events:
@@ -41,7 +45,23 @@ def handle_events():
                         if 600 - 1 - event.y >= 180 and 600 - 1 - event.y <= 220:
                             knight.__init__()
                             GroundMonster.__init__()
+                            GroundMonster2.__init__()
+                            GroundMonster2.x = 3000
+                            GroundMonster2.type = 2
+                            GroundMonster3.__init__()
+                            GroundMonster3.x = 5000
+                            boss.__init__()
                             Map.cur_state = 'map1'
+                            elev.__init__()
+                            bosselev.__init__()
+                            bosselev.x = 7510
+                            bosselev.savex = 7510
+                            key.__init__()
+                            npc.__init__()
+                            npc2.__init__()
+                            Geos = [geo() for i in range(geonum)]
+                            Geos2 = [geo() for i in range(geonum2)]
+                            Geos3 = [geo() for i in range(geonum3)]
             elif Map.cur_state == 'pause':
                 if event.type == SDL_MOUSEBUTTONDOWN:
                     if event.x <= 450 and event.x >= 360:
@@ -79,9 +99,6 @@ def handle_events():
 
 
 # 초기화
-geonum = random.randint(2,5)
-geonum2 = random.randint(2,5)
-geonum3 = random.randint(2,5)
 tempx,otempx = 0,0
 
 def enter():
@@ -131,7 +148,6 @@ def enter():
     game_world.add_object(key, 1)
     game_world.add_object(npc2, 0)
     game_world.add_object(bosselev, 1)
-
     # 블록 그리기
     for i in blocks1:
         game_world.add_object(i, 0)
@@ -186,6 +202,10 @@ def enter():
         twcount += 1
 
     twelev2.x = 6400
+    for i in secblocks1:
+        game_world.add_object(i, 0)
+        i.x = 180 + 150 * tempx
+        tempx += 1
 
     for i in secblocks2:
         game_world.add_object(i, 0)
@@ -401,10 +421,6 @@ def update():
                 if elev.sFloor == False:
                     elev.sFloor = True
                     elev.plusy = 0
-                for i in secblocks1:
-                    game_world.add_object(i, 0)
-                    i.x = 180 + 150 * tempx
-                    tempx += 1
         knight.y = elev.y + elev.plusy + 50
 
     # 두개의 길 선택 승강기
