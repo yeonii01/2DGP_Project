@@ -3,6 +3,7 @@ import game_framework
 import Knight
 from Map import map
 import Enemy
+import Boss
 from Enemy import geo
 import game_world
 import random
@@ -13,8 +14,8 @@ from obstacle import Obstacle
 from Npc import NPC
 from Npc import NPC2
 from ground import Elevator
-from boss import KEY
-from boss import BOSS
+from Boss import KEY
+from Boss import BOSS
 def handle_events():
     events = get_events()
     for event in events:
@@ -169,9 +170,7 @@ def enter():
         i.x = 20 + 150 * tempx
         tempx += 1
 
-    knight.x = 3500 #확인용
     twelev.x = 5300
-    # twblockup.y += 200
 
     twcount = 0
     for i in twblockup:
@@ -207,10 +206,10 @@ def exit():
 
 timer1 = 0
 timer2 = 0
-
+timer3 = 0
 check = False
 def update():
-    global timer1, timer2, check, tempx
+    global timer1, timer2, timer3, check, tempx
 
     check = False
 
@@ -431,7 +430,6 @@ def update():
     if key.onoff == True:
         if knight.x >=7100:
             knight.x = 7100
-    # 수정중
     if collide(bosselev, knight):
         if bosselev.sFloor == False:
             if math.fabs(bosselev.savex - bosselev.x) <= 400:
@@ -441,10 +439,44 @@ def update():
                 bosselev.sFloor = True
         knight.y = bosselev.y + 50
 
+    #boss 충돌체크
+    if boss.cur_state != Boss.DIE:
+        if timer1 >= 0:
+            timer1 -= 1
+
+        else:
+            if math.fabs(boss.x - knight.x) <= 120:
+                if knight.cur_state == Knight.ATTACK:
+                    boss.life -= 1
+                    boss.x -= boss.dir * 75
+                    timer1 = 500
+
+        if timer2 >= 0:
+            if timer2 >= 1900:
+                knight.x = knight.x + boss.dir * 1
+            timer2 -= 1
+
+        else:
+            if collide(knight, boss):
+                if knight.cur_state != Knight.ATTACK:
+                    if knight. life > 0:
+                        knight.life -= 1
+                        timer2 = 2000
+
+    if boss.life == 0:
+        boss.cur_state = Boss.DIE
+        boss.life = -1
+        timer3 = 2000
+
+    if boss.life < 0:
+        timer3 -= 1
+
+    if timer3 < 0:
+        Map.cur_state = 'finish'
 
 def draw_world():
     for game_object in game_world.all_objects():
-        if Map.cur_state == 'start' or Map.cur_state == 'die'or Map.cur_state == 'pause':
+        if Map.cur_state == 'start' or Map.cur_state == 'die'or Map.cur_state == 'pause' or Map.cur_state == 'finish':
             Map.draw()
         else:
             game_object.draw()

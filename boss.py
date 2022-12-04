@@ -16,7 +16,6 @@ class WAKE:
     @staticmethod
     def enter(self):
         global FRAMES_PER_ACTION
-        pass
 
     @staticmethod
     def exit(self):
@@ -37,7 +36,6 @@ class WALK:
     @staticmethod
     def enter(self):
         global FRAMES_PER_ACTION
-        pass
 
     @staticmethod
     def exit(self):
@@ -45,57 +43,71 @@ class WALK:
 
     @staticmethod
     def do(self):
+        if self.x - play_state.knight.x <= 0:
+            self.dir = 1
+        else:
+            self.dir = -1
+        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time * 0.1
         FRAMES_PER_ACTION = 10
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 10
         if math.fabs(self.x - play_state.knight.x) <= 200:
-                self.cur_state = RUN
+            if self.timer <= 0:
+                self.cur_state = ATTACK
 
     @staticmethod
     def draw(self):
         if self.frame < 6:
-            self.bossimage.clip_composite_draw(int(self.frame) * 442, 5868, 496, 354,0,'h', self.x - play_state.knight.x + 400,
+            self.bossimage.clip_composite_draw(int(self.frame) * 446, 5868, 446, 354,0,'h', self.x - play_state.knight.x + 400,
                                             self.y, 144, 115)
         else:
-            self.bossimage.clip_composite_draw((int(self.frame) - 6) * 442, 5513, 496, 354,0,'h', self.x - play_state.knight.x + 400,
+            self.bossimage.clip_composite_draw((int(self.frame) - 6) * 446, 5513, 446, 354,0,'h', self.x - play_state.knight.x + 400,
                                             self.y, 144, 115)
-class RUN:
-    @staticmethod
-    def enter(self):
-        pass
-
-    @staticmethod
-    def exit(self):
-        pass
-
-    @staticmethod
-    def do(self):
-        pass
-
-    @staticmethod
-    def draw(self):
-        pass
 
 class ATTACK:
     @staticmethod
     def enter(self):
-        pass
+        self.frame = 0
+        global FRAMES_PER_ACTION
 
     @staticmethod
     def exit(self):
+        self.attacktimer = 500
         pass
 
     @staticmethod
     def do(self):
-        pass
+        print(self.frame)
+        FRAMES_PER_ACTION = 10
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 10
+        self.attacktimer -= 1
+        if self.attacktimer <= 0:
+            self.timer = 1500
+            self.cur_state = WALK
+            self.frame = 0
+            self.attacktimer = 500
 
     @staticmethod
     def draw(self):
-        pass
+        if self.frame < 4:
+            self.bossimage.clip_composite_draw(int(self.frame) * 706, 3471, 706, 552,0,'h', self.x - play_state.knight.x + 400,
+                                            self.y+20, 210, 170)
+            self.bossimage.clip_composite_draw(0, 1759, 875, 552, 0, 'h',
+                                               self.x - play_state.knight.x + 400,
+                                               self.y + 20, 300, 220)
+        elif self.frame < 8:
+            self.bossimage.clip_composite_draw((int(self.frame) - 4) * 706, 2919, 706, 552,0,'h', self.x - play_state.knight.x + 400,
+                                            self.y+20, 210, 170)
+            self.bossimage.clip_composite_draw(875, 1759, 875, 552, 0, 'h',
+                                               self.x - play_state.knight.x + 350,
+                                               self.y + 20, 300, 220)
+        else:
+            self.bossimage.clip_composite_draw((int(self.frame) - 8) * 706, 2367, 706, 552,0,'h', self.x - play_state.knight.x + 400,
+                                            self.y+20, 210, 170)
 
 class DIE:
     @staticmethod
     def enter(self):
-        pass
+        global FRAMES_PER_ACTION
 
     @staticmethod
     def exit(self):
@@ -103,16 +115,20 @@ class DIE:
 
     @staticmethod
     def do(self):
+        FRAMES_PER_ACTION = 9
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 9
         pass
     @staticmethod
     def draw(self):
-        pass
-
+        self.bossimage.clip_composite_draw(int(self.frame) * 331, 0, 331, 312, 0, 'h',
+                                           self.x - play_state.knight.x + 400,
+                                           self.y, 144, 115)
 
 class BOSS:
     def __init__(self):
-        self.x, self.y = 8600, 130
+        self.x, self.y = 8900, 130
         self.frame = 0
+        self.attacktimer = 500
         self.timer = 0
         self.cur_state = WAKE
         self.dir = -1
@@ -129,7 +145,10 @@ class BOSS:
         self.cur_state.draw(self)
 
     def get_bb(self):
-        return self.x - play_state.knight.x + 400 - 50, self.y - 50, self.x - play_state.knight.x + 400 + 50, self.y + 50
+        if self.cur_state == ATTACK:
+            return self.x - play_state.knight.x + 400 - 120, self.y - 50, self.x - play_state.knight.x + 400 + 50, self.y + 50
+        else:
+            return self.x - play_state.knight.x + 400 - 50, self.y - 50, self.x - play_state.knight.x + 400 + 50, self.y + 50
 
 class KEY:
     def __init__(self):
@@ -137,7 +156,6 @@ class KEY:
         self.keyimage = load_image('key.png')
         self.onoff = True
         self.keyget = False
-        pass
 
     def update(self):
         pass
