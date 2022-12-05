@@ -37,6 +37,7 @@ class IDLE:
     def enter(self,event):
         # self.dir = 0
         self.frame = 0
+        self.pre_state = IDLE
         global FRAMES_PER_ACTION
         pass
 
@@ -59,6 +60,7 @@ class IDLE:
 class LIFEUP:
     @staticmethod
     def enter(self,event):
+        self.pre_state = LIFEUP
         # self.dir = 0
         self.frame = 0
         global FRAMES_PER_ACTION
@@ -89,6 +91,7 @@ class LIFEUP:
 class UP:
     @staticmethod
     def enter(self,event):
+        self.pre_state = UP
         # self.dir = self.face_dir
         self.frame = 0
         global FRAMES_PER_ACTION
@@ -111,6 +114,7 @@ class UP:
 class DOWN:
     @staticmethod
     def enter(self,event):
+        self.pre_state = DOWN
         # self.dir = self.face_dir
         self.frame = 0
         global FRAMES_PER_ACTION
@@ -137,8 +141,13 @@ class RUN:
     @staticmethod
     def enter(self,event):
         global FRAMES_PER_ACTION
+        print(self.pre_state)
+
         self.frame = 0
-        self.dir = 0
+        if self.pre_state != RUNJUMP:
+            self.dir = 0
+        else:
+            print(self.dir)
         if event == RD:
             self.face_dir = 1
             self.dir += 1
@@ -146,13 +155,16 @@ class RUN:
             self.face_dir = -1
             self.dir -= 1
         elif event == RU:
+            self.face_dir = 1
             self.dir -= 1
         elif event == LU:
+            self.face_dir = -1
             self.dir += 1
-
+        # print(self.dir)
+        self.pre_state = RUN
     @staticmethod
     def exit(self, event):
-        # self.face_dir = self.dir
+        self.face_dir = self.dir
         # print(self.face_dir)
         pass
     @staticmethod
@@ -173,6 +185,7 @@ class ATTACK:
         global FRAMES_PER_ACTION
         # self.dir = self.face_dir
         self.frame = 0
+        self.pre_state = ATTACK
         pass
 
     @staticmethod
@@ -213,8 +226,8 @@ class JUMP:
         if self.frame >= 12:
             self.jumpcount = 0
             self.y = self.savey
-            self.cur_state = IDLE
             self.dir = self.face_dir
+            self.cur_state = RUN
             self.savey = 0
         if self.jumpcount <= 6:
             self.y += RUN_SPEED_PPS * game_framework.frame_time
@@ -238,7 +251,7 @@ class RUNJUMP:
     @staticmethod
     def exit(self, event):
         self.frame = 0
-        # self.dir = self.face_dir
+        self.dir = self.face_dir
         pass
     @staticmethod
     def do(self):
@@ -246,10 +259,11 @@ class RUNJUMP:
         self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
         self.jumpcount = self.frame
         if self.frame >= 12:
+            self.pre_state = RUNJUMP
             self.jumpcount = 0
             self.y = self.savey
+            self.dir = self.face_dir
             self.cur_state = RUN
-            # self.dir = self.face_dir
         elif self.jumpcount <= 6:
             self.y += RUN_SPEED_PPS * game_framework.frame_time
         elif self.jumpcount <= 12 and self.jumpcount >= 6:
@@ -266,6 +280,7 @@ class RUNJUMP:
 class RUSH:
     @staticmethod
     def enter(self, event):
+        self.pre_state = RUSH
         global FRAMES_PER_ACTION
         self.frame = 0
         pass
@@ -371,7 +386,7 @@ class knight:
 
         if self.event_que:
             event = self.event_que.pop()
-            # self.pre_state = event
+            self.pre_state = event
             if self.frame !=0 and (self.cur_state == JUMP or self.cur_state == JUMPRUSH or self.cur_state == RUNJUMP or self.cur_state == RUSH):
                 self.cur_state.exit(self, event)
             try:
